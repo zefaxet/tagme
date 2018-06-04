@@ -1,0 +1,5 @@
+Window opens, top bar is for selecting file. This bar accepts a full path or a shorthand for a filename.
+The audio file repo folder path is defined in a settings menu.
+Major tag frames are immediately visible with input fields in the window.
+Additional frames can be found with an expansion button.
+Window is intended to be small, but can be resized. On resize, menu is expanded automatically.
