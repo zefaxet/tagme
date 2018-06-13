@@ -3,5 +3,7 @@ The audio file repo folder path is defined in a settings menu.
 Major tag frames are immediately visible with input fields in the window.
 Additional frames can be found with an expansion button.
 Window is intended to be small, but can be resized. On resize, menu is expanded automatically.
+Ability to pull image and tags form booru given url
+Ability to associate image with booru(s) and pull tags
 
 Move to ironpy. Switch from tkinter to .net forms.
