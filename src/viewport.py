@@ -6,6 +6,16 @@ clr.AddReference("System.Drawing")
 from System.Windows.Forms import Application, Form, Label, Button
 from System.Drawing import Point
 
+count = 0
+
+
+def clicked(sender, args):
+    global count
+    global button
+    count += 1
+    button.Text = "Clicked %s times" % count
+
+
 a = Form()
 a.Text = "Hi"
 a.Name = "Hi"
@@ -22,6 +32,7 @@ button.Text="yeman"
 button.Location = Point(100,100)
 button.Height = 30
 button.Width = 50
+button.Click += clicked
 a.Controls.Add(button)
 
 Application.Run(a)
