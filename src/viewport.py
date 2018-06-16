@@ -3,8 +3,12 @@ sys.path.append(r'C:\Python27\Lib')
 import clr
 clr.AddReference("System.Windows.Forms")
 clr.AddReference("System.Drawing")
+clr.AddReference("System.IO")
+clr.AddReference("System.Net")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode
-from System.Drawing import Size, Color, Image
+from System.Drawing import Size, Color, Image, Bitmap
+from System.IO import MemoryStream
+from System.Net import WebClient
 
 window = Form()
 window.Text = "tagme"
@@ -73,7 +77,7 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #  ART AREA CONTROLS ####################
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
-COVER_ART.Image = Image.FromFile('../drawup.png')
+COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Houses_of_Parliament_%28Cape_Town%29.jpg/1024px-Houses_of_Parliament_%28Cape_Town%29.jpg')))
 COVER_ART.Size = Size(160,160)
 COVER_ART.Top = 45
 COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
