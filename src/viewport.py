@@ -5,7 +5,7 @@ clr.AddReference("System.Windows.Forms")
 clr.AddReference("System.Drawing")
 clr.AddReference("System.IO")
 clr.AddReference("System.Net")
-from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode
+from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment
 from System.Drawing import Size, Color, Image, Bitmap
 from System.IO import MemoryStream
 from System.Net import WebClient
@@ -68,7 +68,7 @@ ART_AREA.Dock = DockStyle.Left
 INFO_AREA = Panel()
 INFO_AREA.Width = EXPLORER_VISIBLE_INFORMATION_AREA.Width * 0.6
 INFO_AREA.Dock = DockStyle.Right
-INFO_AREA.BackColor = Color.Blue
+#INFO_AREA.BackColor = Color.Blue
 
 EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(ART_AREA)
 EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
@@ -77,13 +77,26 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #  ART AREA CONTROLS ####################
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
-COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Houses_of_Parliament_%28Cape_Town%29.jpg/1024px-Houses_of_Parliament_%28Cape_Town%29.jpg')))
+COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
 COVER_ART.Size = Size(160,160)
 COVER_ART.Top = 45
 COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
 
 ART_AREA.Controls.Add(COVER_ART)
 #########################################
+
+#  INFO AREA CONTROLS ###################
+
+#  Construct four identical textboxes
+field = TextBox()
+field.Width=250
+field.Top=40
+field.Left=20
+field.Text="Name"
+field.TextAlign = HorizontalAlignment.Center
+INFO_AREA.Controls.Add(field)
+
+
 
 Application.EnableVisualStyles()
 Application.Run(window)
