@@ -1,14 +1,17 @@
 import sys
 sys.path.append(r'C:\Python27\Lib')
+
 import clr
 clr.AddReference("System.Windows.Forms")
-clr.AddReference("System.Drawing")
-clr.AddReference("System.IO")
-clr.AddReference("System.Net")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment
+clr.AddReference("System.Drawing")
 from System.Drawing import Size, Color, Image, Bitmap
+clr.AddReference("System.IO")
 from System.IO import MemoryStream
+clr.AddReference("System.Net")
 from System.Net import WebClient
+
+from formbox import formbox
 
 window = Form()
 window.Text = "tagme"
@@ -38,7 +41,7 @@ LOAD_BUTTON = Button()
 LOAD_BUTTON.Text = "Load"
 LOAD_BUTTON.Dock = DockStyle.Right
 
-LOAD_TEXTBOX = TextBox()
+LOAD_TEXTBOX = formbox("Search for file...")
 LOAD_TEXTBOX.Dock = DockStyle.Left
 LOAD_TEXTBOX.Width = LOAD_AREA.Width - LOAD_BUTTON.Width
 
@@ -88,12 +91,10 @@ ART_AREA.Controls.Add(COVER_ART)
 #  INFO AREA CONTROLS ###################
 
 #  Construct four identical textboxes
-field = TextBox()
+field = formbox("name")
 field.Width=250
 field.Top=40
 field.Left=20
-field.Text="Name"
-field.TextAlign = HorizontalAlignment.Center
 INFO_AREA.Controls.Add(field)
 
 
