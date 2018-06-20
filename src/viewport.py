@@ -11,7 +11,7 @@ from System.IO import MemoryStream
 clr.AddReference("System.Net")
 from System.Net import WebClient
 
-from formbox import formbox
+from formbox import Formbox
 
 window = Form()
 window.Text = "tagme"
@@ -41,7 +41,7 @@ LOAD_BUTTON = Button()
 LOAD_BUTTON.Text = "Load"
 LOAD_BUTTON.Dock = DockStyle.Right
 
-LOAD_TEXTBOX = formbox("Search for file...")
+LOAD_TEXTBOX = Formbox("Search for file...")
 LOAD_TEXTBOX.Dock = DockStyle.Left
 LOAD_TEXTBOX.Width = LOAD_AREA.Width - LOAD_BUTTON.Width
 
@@ -91,11 +91,11 @@ ART_AREA.Controls.Add(COVER_ART)
 #  INFO AREA CONTROLS ###################
 
 #  Construct four identical textboxes
-field = formbox("name")
-field.Width=250
-field.Top=40
-field.Left=20
-INFO_AREA.Controls.Add(field)
+TITLE_FIELD = Formbox("Title")
+TITLE_FIELD.Width=250
+TITLE_FIELD.Top=40
+TITLE_FIELD.Left=20
+INFO_AREA.Controls.Add(TITLE_FIELD)
 
 
 
