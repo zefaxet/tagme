@@ -7,3 +7,5 @@ Ability to pull image and tags form booru given url
 Ability to associate image with booru(s) and pull tags
 
 Move to ironpy. Switch from tkinter to .net forms.
+
+Placeholder texts. ?Make PlaceholderTextBox class?
