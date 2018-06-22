@@ -36,12 +36,17 @@ MUTATION_AREA.Dock = DockStyle.Fill
 window.Controls.Add(MUTATION_AREA)
 #########################################
 
+def Extract(sender, args):
+    path = LOAD_TEXTBOX.GetText()
+
+
 #  LOAD FILE CONTROLS ###################
 LOAD_BUTTON = Button()
 LOAD_BUTTON.Text = "Load"
 LOAD_BUTTON.Dock = DockStyle.Right
+LOAD_BUTTON.Click += Extract
 
-LOAD_TEXTBOX = Formbox("Search for file...")
+LOAD_TEXTBOX = Formbox("Path to file...")
 LOAD_TEXTBOX.Dock = DockStyle.Left
 LOAD_TEXTBOX.Width = LOAD_AREA.Width - LOAD_BUTTON.Width
 
@@ -136,22 +141,3 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(TRACK)
 
 Application.EnableVisualStyles()
 Application.Run(window)
-
-
-
-# # Mutation area frame split
-# TOP_INFO = LabelFrame(MUTATION_AREA)
-# TOP_INFO.pack(side=TOP, expand=1, fill=BOTH)
-# LOWER_INFO = LabelFrame(MUTATION_AREA)
-# LOWER_INFO.pack(side=BOTTOM, expand=1, fill=BOTH)
-#
-# # Top level frame split
-# ART_FRAME = LabelFrame(TOP_INFO)
-# ART_FRAME.master.size()
-# ART_FRAME.pack(side=LEFT, expand=1, fill=BOTH, padx=5)
-# TOP_INFO_ENTRY = LabelFrame(TOP_INFO)
-# TOP_INFO_ENTRY.pack(side=RIGHT, expand=1, fill=BOTH)
-# # COVER_ART = Label(MAIN_FRAME, bg="red", bitmap=Image(file="..//drawup.png"))
-# # COVER_ART.pack(side=LEFT)
-#
-# window.mainloop()

@@ -2,9 +2,6 @@ from sys import argv
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TIT2, TALB, TPE1, TPE2, COMM, USLT, TCOM, TCON, TDRC, TRCK
 
-arglist = ["-filename", "-title", "-aartist", "-album", "-tracknum", "-year", "-genre"]
-argdict = {}
-
 tags = ID3("C:\\Users\\Edward Auttonberry\\Desktop\\music\\" + input() + ".mp3")
 
 for x in argv:
