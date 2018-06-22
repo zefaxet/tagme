@@ -7,7 +7,7 @@ from System.Windows.Forms import TextBox, HorizontalAlignment
 clr.AddReference("System.Drawing")
 from System.Drawing import Color
 
-class formbox(TextBox):
+class Formbox(TextBox):
 
     def __init__(self, placeholdertext):
         TextBox.__init__(self)
