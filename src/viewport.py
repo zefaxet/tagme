@@ -91,11 +91,40 @@ ART_AREA.Controls.Add(COVER_ART)
 #  INFO AREA CONTROLS ###################
 
 #  Construct four identical textboxes
+#  Each Formbox is 40 units above the next
 TITLE_FIELD = Formbox("Title")
-TITLE_FIELD.Width=250
-TITLE_FIELD.Top=40
-TITLE_FIELD.Left=20
+TITLE_FIELD.Width = 250
+TITLE_FIELD.Top = 35
+TITLE_FIELD.Left = 20
 INFO_AREA.Controls.Add(TITLE_FIELD)
+
+ALBUM_FIELD = Formbox("Album")
+ALBUM_FIELD.Width = 250
+ALBUM_FIELD.Top = 75
+ALBUM_FIELD.Left = 20
+INFO_AREA.Controls.Add(ALBUM_FIELD)
+
+MAIN_ARTIST = Formbox("Main Artist")
+MAIN_ARTIST.Width = 250
+MAIN_ARTIST.Top = 115
+MAIN_ARTIST.Left = 20
+INFO_AREA.Controls.Add(MAIN_ARTIST)
+
+CONTRIBUTING_ARTISTS = Formbox("Contributing Artist(s)")
+CONTRIBUTING_ARTISTS.Width = 250
+CONTRIBUTING_ARTISTS.Top = 155
+CONTRIBUTING_ARTISTS.Left = 20
+INFO_AREA.Controls.Add(CONTRIBUTING_ARTISTS)
+
+GENRE = Formbox("Genre")
+GENRE.Width = 250
+GENRE.Top = 195
+GENRE.Left = 20
+INFO_AREA.Controls.Add(GENRE)
+#########################################
+
+#  UNDERLYING INFORMATION AREA CONTROLS #
+DEBUT_YEAR = Formbox("Year")
 
 
 
