@@ -28,3 +28,9 @@ class Formbox(TextBox):
             self.Text = self.__placeholder
             self.TextAlign = HorizontalAlignment.Center
             self.ForeColor = Color.Gray
+
+    def GetText(self):
+        if self.TextAlign == HorizontalAlignment.Center and self.Text == self.__placeholder:
+            return ""
+        else:
+            return self.Text
