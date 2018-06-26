@@ -12,6 +12,7 @@ clr.AddReference("System.Net")
 from System.Net import WebClient
 
 from formbox import Formbox
+from TagExtract import FileInterface
 
 window = Form()
 window.Text = "tagme"
@@ -84,7 +85,8 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #  ART AREA CONTROLS ####################
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
-COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+#COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
 COVER_ART.Size = Size(160,160)
 COVER_ART.Top = 45
 COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
