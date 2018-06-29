@@ -1,6 +1,7 @@
 import sys
 sys.path.append(r'C:\Python27\Lib')
 import clr
+import logging.Logger
 
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import TextBox, HorizontalAlignment
@@ -34,3 +35,8 @@ class Formbox(TextBox):
             return ""
         else:
             return self.Text
+
+    def SetText(self, text):
+        if not(text == "" or text is None):
+            self.recieve_focus(None, None)
+            self.Text = text

@@ -9,16 +9,18 @@ f = File.Create(r'../test/Blackened.mp3')
 
 class FileInterface:
 
-    def __init__(self, path):
+    def __init__(self, path=""):
         self.file = File.Create(path)
 
     def GetTitle(self):
-        return self.file.Title
+        return self.file.Tag.Title
+
+    def GetAlbum(self):
+        return self.file.Tag.Album
 
     def GetPicture(self):
         return self.file.Tag.Pictures[0].Data
 
-print f.Tag.Pictures[0].Data
 #  KNOWN FIELDS
 #  Name - file path/name
 

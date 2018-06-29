@@ -12,7 +12,9 @@ clr.AddReference("System.Net")
 from System.Net import WebClient
 
 from formbox import Formbox
-from TagExtract import FileInterface
+from FileInterface import FileInterface
+
+FI = None
 
 window = Form()
 window.Text = "tagme"
@@ -37,15 +39,11 @@ MUTATION_AREA.Dock = DockStyle.Fill
 window.Controls.Add(MUTATION_AREA)
 #########################################
 
-def Extract(sender, args):
-    path = LOAD_TEXTBOX.GetText()
-
-
 #  LOAD FILE CONTROLS ###################
+
 LOAD_BUTTON = Button()
 LOAD_BUTTON.Text = "Load"
 LOAD_BUTTON.Dock = DockStyle.Right
-LOAD_BUTTON.Click += Extract
 
 LOAD_TEXTBOX = Formbox("Path to file...")
 LOAD_TEXTBOX.Dock = DockStyle.Left
@@ -86,7 +84,8 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
 #COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
-COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
+#COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
+COVER_ART.BackColor = Color.White
 COVER_ART.Size = Size(160,160)
 COVER_ART.Top = 45
 COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
@@ -140,6 +139,26 @@ TRACK.Top = 10
 TRACK.Left = 140
 UNDERLYING_INFORMATION_AREA.Controls.Add(TRACK)
 
+#  Button Methods #######################
+
+def load_file(object, sender):
+    global FI
+    global LOAD_TEXTBOX
+    global TITLE_FIELD
+    global ALBUM_FIELD
+
+    path = LOAD_TEXTBOX.GetText()
+    FI = FileInterface(path)
+
+    songtitle = FI.GetTitle()
+    TITLE_FIELD.SetText(songtitle)
+
+    albumtitle = FI.GetAlbum()
+    print albumtitle
+    ALBUM_FIELD.SetText(albumtitle)
+
+LOAD_BUTTON.Click += load_file
 
 Application.EnableVisualStyles()
 Application.Run(window)
+
