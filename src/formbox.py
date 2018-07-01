@@ -48,4 +48,4 @@ class Formbox(TextBox):
                 self.receive_focus(None, None)
                 self.Text = text
             elif type(text) is Array[str]:
-                print "got here"
+                self.set_text(";".join(text))
