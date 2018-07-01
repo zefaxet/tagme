@@ -12,13 +12,15 @@ from System.Drawing import Color
 
 class Formbox(TextBox):
 
-    logger = create_logger('Formbox')
+    LOGGER = create_logger('Formbox')
 
-    def __init__(self, placeholdertext):
+    def __init__(self, placeholdertext, formtype=str):
         TextBox.__init__(self)
         self.Enter += self.receive_focus
         self.Leave += self.lose_focus
         self._placeholder = placeholdertext
+        self._formtype = formtype
+
         self.lose_focus(None, None)
 
     def receive_focus(self, sender, args):
@@ -27,7 +29,7 @@ class Formbox(TextBox):
             self.TextAlign = HorizontalAlignment.Left
             self.ForeColor = Color.Black
             if sender is self:
-                self.logger.debug("User focus on '{}' formbox".format(self._placeholder))
+                self.LOGGER.debug("User focus on '{}' formbox".format(self._placeholder))
 
     def lose_focus(self, sender, args):
         if self.Text == "":
@@ -44,8 +46,12 @@ class Formbox(TextBox):
     def set_text(self, text):
         if not(text == "" or text is None):
             tag_type = type(text)
-            if type(text) is str:
+            if tag_type is str:
                 self.receive_focus(None, None)
                 self.Text = text
-            elif type(text) is Array[str]:
+            elif tag_type is Array[str]:
                 self.set_text(";".join(text))
+            else:
+                self.LOGGER.critical("Invalid typed object passed into set_text method.")
+                raise TypeError("Unexpected object type {}. Expected type for field is {}"
+                                .format(tag_type, self._formtype))
