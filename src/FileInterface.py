@@ -21,6 +21,12 @@ class FileInterface:
     def GetPicture(self):
         return self.file.Tag.Pictures[0].Data
 
+    def GetMainArtist(self):
+        return self.file.Tag.AlbumArtists[0]
+
+    def GetPerformers(self):
+        return self.file.Tag.Performers
+
 #  KNOWN FIELDS
 #  Name - file path/name
 

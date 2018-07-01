@@ -147,15 +147,20 @@ def load_file(object, sender):
     global TITLE_FIELD
     global ALBUM_FIELD
 
-    path = LOAD_TEXTBOX.GetText()
+    path = LOAD_TEXTBOX.get_text()
     FI = FileInterface(path)
 
-    songtitle = FI.GetTitle()
-    TITLE_FIELD.SetText(songtitle)
+    song_title = FI.GetTitle()
+    TITLE_FIELD.set_text(song_title)
 
-    albumtitle = FI.GetAlbum()
-    print albumtitle
-    ALBUM_FIELD.SetText(albumtitle)
+    album_title = FI.GetAlbum()
+    ALBUM_FIELD.set_text(album_title)
+
+    main_artist = FI.GetMainArtist()
+    MAIN_ARTIST.set_text(main_artist)
+
+    contributing_artists = FI.GetPerformers()
+    CONTRIBUTING_ARTISTS.set_text(contributing_artists)
 
 LOAD_BUTTON.Click += load_file
 
