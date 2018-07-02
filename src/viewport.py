@@ -163,19 +163,27 @@ def load_file(object, sender):
     global ALBUM_FIELD
 
     path = LOAD_TEXTBOX.get_text()
-    FI = FileInterface(path)
+    if path:
+        LOGGER.info("Loading file: {}".format(path))
+        FI = FileInterface(path)
+        LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
 
-    song_title = FI.GetTitle()
-    TITLE_FIELD.set_text(song_title)
+        song_title = FI.GetTitle()
+        TITLE_FIELD.set_text(song_title)
+        LOGGER.info("Extracted tag 'Title': {}".format("#NO TAG EXTRACTED#" if song_title is None else song_title))
+    
+        album_title = FI.GetAlbum()
+        ALBUM_FIELD.set_text(album_title)
+        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if album_title is None else album_title))
 
-    album_title = FI.GetAlbum()
-    ALBUM_FIELD.set_text(album_title)
+        main_artist = FI.GetMainArtist()
+        MAIN_ARTIST.set_text(main_artist)
+        LOGGER.info("Extracted tag 'Album Artist': {}".format("#NO TAG EXTRACTED#" if main_artist is None else main_artist))
 
-    main_artist = FI.GetMainArtist()
-    MAIN_ARTIST.set_text(main_artist)
-
-    contributing_artists = FI.GetPerformers()
-    CONTRIBUTING_ARTISTS.set_text(contributing_artists)
+        contributing_artists = FI.GetPerformers()
+        CONTRIBUTING_ARTISTS.set_text(contributing_artists)
+        LOGGER.info("Extracted tag 'Contributing Artists': {}".format(
+            "#NO TAG EXTRACTED#" if contributing_artists is None else contributing_artists))
 
 def apply_changes(object, sender):
     print "apply"
