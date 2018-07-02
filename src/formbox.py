@@ -65,9 +65,7 @@ class Formbox(TextBox):
 
     def lose_focus(self, sender, args):
         if self.Text == "":
-            self.Text = self._placeholder
-            self.TextAlign = HorizontalAlignment.Center
-            self.ForeColor = Color.Gray
+            self.__clear()
 
     ########################################
 
@@ -101,4 +99,13 @@ class Formbox(TextBox):
                 raise TypeError("Unexpected object type {} in formbox '{}'. Expected type for field is {}"
                                 .format(tag_type, self.placeholder, self.formtype))
         else:
-            self.lose_focus(None, None)
+            self.__clear()
+
+    ########################################
+
+    #  PRIVATE METHODS #####################
+
+    def __clear(self):
+        self.Text = self.placeholder
+        self.TextAlign = HorizontalAlignment.Center
+        self.ForeColor = Color.Gray
