@@ -4,7 +4,7 @@ import clr
 from log import create_logger
 
 clr.AddReference("System")
-from System import Array
+from System import Array, UInt32
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import TextBox, HorizontalAlignment
 clr.AddReference("System.Drawing")
@@ -14,7 +14,7 @@ from System.Drawing import Color
 class Formbox(TextBox):
 
     LOGGER = create_logger('Formbox')
-    VALID_TYPES = [str, Array[str]]
+    VALID_TYPES = [str, Array[str], UInt32]
 
     def __init__(self, placeholdertext, formtype=str):
         TextBox.__init__(self)
@@ -88,12 +88,17 @@ class Formbox(TextBox):
     def set_text(self, text):
         if not(text == "" or text is None):
             tag_type = type(text)
+            self.receive_focus(None, None)
             if tag_type is str:
-                self.receive_focus(None, None)
                 self.Text = text
+            elif tag_type is UInt32:
+                self.LOGGER.info("Formbox '{}' recieved UInt32, {}. Casting to str.".format(self.placeholder, text))
+                self.Text = str(text)
             elif tag_type is Array[str]:
                 self.set_text(";".join(text))
             else:
                 self.LOGGER.critical("Invalid typed object passed into set_text method.")
-                raise TypeError("Unexpected object type {}. Expected type for field is {}"
-                                .format(tag_type, self.formtype))
+                raise TypeError("Unexpected object type {} in formbox '{}'. Expected type for field is {}"
+                                .format(tag_type, self.placeholder, self.formtype))
+        else:
+            self.lose_focus(None, None)

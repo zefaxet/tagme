@@ -16,6 +16,9 @@ class FileInterface:
     def get_album(self):
         return self.file.Tag.Album
 
+    def set_album(self, value):
+        self.file.Tag.Album = value
+
     def get_picture(self):
         return self.file.Tag.Pictures[0].Data
 
@@ -26,7 +29,13 @@ class FileInterface:
         return self.file.Tag.Performers
 
     def get_genre(self):
-        return self.file.Tag.Genre
+        return self.file.Tag.Genres
+
+    def get_year(self):
+        return self.file.Tag.Year
+
+    def get_track_number(self):
+        return self.file.Tag.Track
 
 #  KNOWN FIELDS
 #  Name - file path/name

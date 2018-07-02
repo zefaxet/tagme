@@ -125,7 +125,7 @@ CONTRIBUTING_ARTISTS.Top = 155
 CONTRIBUTING_ARTISTS.Left = 20
 INFO_AREA.Controls.Add(CONTRIBUTING_ARTISTS)
 
-GENRE = Formbox("Genre")
+GENRE = Formbox("Genre", Formbox.VALID_TYPES[1])
 GENRE.Width = 250
 GENRE.Top = 195
 GENRE.Left = 20
@@ -133,12 +133,12 @@ INFO_AREA.Controls.Add(GENRE)
 #########################################
 
 #  UNDERLYING INFORMATION AREA CONTROLS #
-DEBUT_YEAR = Formbox("Year")
+DEBUT_YEAR = Formbox("Year", Formbox.VALID_TYPES[2])
 DEBUT_YEAR.Top = 10
 DEBUT_YEAR.Left = UNDERLYING_INFORMATION_AREA.Width - 270
 UNDERLYING_INFORMATION_AREA.Controls.Add(DEBUT_YEAR)
 
-TRACK = Formbox("Track #")
+TRACK = Formbox("Track #", Formbox.VALID_TYPES[2])
 TRACK.Top = 10
 TRACK.Left = UNDERLYING_INFORMATION_AREA.Width - 120
 UNDERLYING_INFORMATION_AREA.Controls.Add(TRACK)
@@ -185,10 +185,24 @@ def load_file(object, sender):
         CONTRIBUTING_ARTISTS.set_text(contributing_artists)
         LOGGER.info("Extracted tag 'Contributing Artists': {}".format(
             "#NO TAG EXTRACTED#" if contributing_artists is None else contributing_artists))
+
+        genres = FI.get_genre()
+        GENRE.set_text(genres)
+        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if genres is None else genres))
+
+        year = FI.get_year()
+        DEBUT_YEAR.set_text(year)
+        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if year is None else year))
+
+        track = FI.get_track_number()
+        TRACK.set_text(track)
+        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if track is None else track))
         
 
 def apply_changes(object, sender):
-    print "apply"
+    LOGGER.info("Applying changes...")
+    FI.set_album(None)
+    FI.file.Save()
 
 def tagme(object, sender):
     print "tagme"
