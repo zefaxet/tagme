@@ -168,22 +168,24 @@ def load_file(object, sender):
         FI = FileInterface(path)
         LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
 
-        song_title = FI.GetTitle()
+        song_title = FI.get_title()
         TITLE_FIELD.set_text(song_title)
         LOGGER.info("Extracted tag 'Title': {}".format("#NO TAG EXTRACTED#" if song_title is None else song_title))
-    
-        album_title = FI.GetAlbum()
+
+        album_title = FI.get_album()
         ALBUM_FIELD.set_text(album_title)
         LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if album_title is None else album_title))
 
-        main_artist = FI.GetMainArtist()
+        main_artist = FI.get_main_artist()
         MAIN_ARTIST.set_text(main_artist)
-        LOGGER.info("Extracted tag 'Album Artist': {}".format("#NO TAG EXTRACTED#" if main_artist is None else main_artist))
+        LOGGER.info("Extracted tag 'Album Artist': {}".format(
+            "#NO TAG EXTRACTED#" if main_artist is None else main_artist))
 
-        contributing_artists = FI.GetPerformers()
+        contributing_artists = FI.get_performers()
         CONTRIBUTING_ARTISTS.set_text(contributing_artists)
         LOGGER.info("Extracted tag 'Contributing Artists': {}".format(
             "#NO TAG EXTRACTED#" if contributing_artists is None else contributing_artists))
+        
 
 def apply_changes(object, sender):
     print "apply"

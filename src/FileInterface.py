@@ -5,27 +5,28 @@ import clr
 clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
 from TagLib import File
 
-f = File.Create(r'../test/Blackened.mp3')
-
 class FileInterface:
 
     def __init__(self, path=""):
         self.file = File.Create(path)
 
-    def GetTitle(self):
+    def get_title(self):
         return self.file.Tag.Title
 
-    def GetAlbum(self):
+    def get_album(self):
         return self.file.Tag.Album
 
-    def GetPicture(self):
+    def get_picture(self):
         return self.file.Tag.Pictures[0].Data
 
-    def GetMainArtist(self):
+    def get_main_artist(self):
         return self.file.Tag.AlbumArtists[0]
 
-    def GetPerformers(self):
+    def get_performers(self):
         return self.file.Tag.Performers
+
+    def get_genre(self):
+        return self.file.Tag.Genre
 
 #  KNOWN FIELDS
 #  Name - file path/name
