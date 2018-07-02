@@ -1,7 +1,8 @@
 import sys
 sys.path.append(r'C:\Python27\Lib')
-
 import clr
+from log import create_logger
+
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment
 clr.AddReference("System.Drawing")
@@ -14,12 +15,15 @@ from System.Net import WebClient
 from formbox import Formbox
 from FileInterface import FileInterface
 
+LOGGER = create_logger('Viewport')
 FI = None
+
+LOGGER.info("Booting viewport.")
 
 window = Form()
 window.Text = "tagme"
 window.Name = "tagme"
-window.Size = Size(500,500)
+window.Size = Size(500,300)
 window.FormBorderStyle = FormBorderStyle.FixedDialog
 
 #  TOP LEVEL CONTROLS ###################
@@ -55,11 +59,11 @@ LOAD_AREA.Controls.Add(LOAD_TEXTBOX)
 
 #  MUTATION AREA CONTROLS ###############
 EXPLORER_VISIBLE_INFORMATION_AREA = Panel()
-EXPLORER_VISIBLE_INFORMATION_AREA.Height = MUTATION_AREA.Height / 2
+EXPLORER_VISIBLE_INFORMATION_AREA.Height = MUTATION_AREA.Height * 6 / 7
 EXPLORER_VISIBLE_INFORMATION_AREA.Dock = DockStyle.Top
 
 UNDERLYING_INFORMATION_AREA = Panel()
-UNDERLYING_INFORMATION_AREA.Height = MUTATION_AREA.Height / 2
+UNDERLYING_INFORMATION_AREA.Height = MUTATION_AREA.Height * 1 / 7
 UNDERLYING_INFORMATION_AREA.Dock = DockStyle.Bottom
 
 MUTATION_AREA.Controls.Add(UNDERLYING_INFORMATION_AREA)
@@ -115,7 +119,7 @@ MAIN_ARTIST.Top = 115
 MAIN_ARTIST.Left = 20
 INFO_AREA.Controls.Add(MAIN_ARTIST)
 
-CONTRIBUTING_ARTISTS = Formbox("Contributing Artist(s)")
+CONTRIBUTING_ARTISTS = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1])
 CONTRIBUTING_ARTISTS.Width = 250
 CONTRIBUTING_ARTISTS.Top = 155
 CONTRIBUTING_ARTISTS.Left = 20
@@ -131,15 +135,26 @@ INFO_AREA.Controls.Add(GENRE)
 #  UNDERLYING INFORMATION AREA CONTROLS #
 DEBUT_YEAR = Formbox("Year")
 DEBUT_YEAR.Top = 10
-DEBUT_YEAR.Left = 20
+DEBUT_YEAR.Left = UNDERLYING_INFORMATION_AREA.Width - 270
 UNDERLYING_INFORMATION_AREA.Controls.Add(DEBUT_YEAR)
 
 TRACK = Formbox("Track #")
 TRACK.Top = 10
-TRACK.Left = 140
+TRACK.Left = UNDERLYING_INFORMATION_AREA.Width - 120
 UNDERLYING_INFORMATION_AREA.Controls.Add(TRACK)
 
+APPLY_BUTTON = Button()
+APPLY_BUTTON.Text = "Apply"
+APPLY_BUTTON.Left = 15
+UNDERLYING_INFORMATION_AREA.Controls.Add(APPLY_BUTTON)
+
+FETCH_BUTTON = Button()
+FETCH_BUTTON.Text = "Tagme"
+FETCH_BUTTON.Left = 100
+UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
+
 #  Button Methods #######################
+
 
 def load_file(object, sender):
     global FI
@@ -162,7 +177,18 @@ def load_file(object, sender):
     contributing_artists = FI.GetPerformers()
     CONTRIBUTING_ARTISTS.set_text(contributing_artists)
 
+def apply_changes(object, sender):
+    print "apply"
+
+def tagme(object, sender):
+    print "tagme"
+
+
 LOAD_BUTTON.Click += load_file
+APPLY_BUTTON.Click += apply_changes
+FETCH_BUTTON.Click += tagme
+
+LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
 
 Application.EnableVisualStyles()
 Application.Run(window)

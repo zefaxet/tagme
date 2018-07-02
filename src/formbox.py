@@ -10,26 +10,58 @@ from System.Windows.Forms import TextBox, HorizontalAlignment
 clr.AddReference("System.Drawing")
 from System.Drawing import Color
 
+
 class Formbox(TextBox):
 
     LOGGER = create_logger('Formbox')
+    VALID_TYPES = [str, Array[str]]
 
     def __init__(self, placeholdertext, formtype=str):
         TextBox.__init__(self)
         self.Enter += self.receive_focus
         self.Leave += self.lose_focus
         self._placeholder = placeholdertext
-        self._formtype = formtype
+        self.formtype = formtype
 
         self.lose_focus(None, None)
+
+        self.LOGGER.info("Initializing formbox {}.".format(self.placeholder))
+
+    #  FIELDS ##############################
+
+    @property
+    def formtype(self):
+        return self._formtype
+
+    @property
+    def placeholder(self):
+        return self._placeholder
+
+    @formtype.setter
+    def formtype(self, value):
+        if value in self.VALID_TYPES:
+            self._formtype = value
+        else:
+            raise TypeError("Invalid formtype on form {}".format(self.placeholder))
+
+    @placeholder.setter
+    def placeholder(self, value):
+        if not type(value) is str:
+            raise TypeError("Non-string object as placeholder text.")
+        else:
+            self._placeholder = value
+
+    ########################################
+
+    #  WINDOWS FORMS EVENTS ################
 
     def receive_focus(self, sender, args):
         if self.TextAlign == HorizontalAlignment.Center:
             self.Text = ""
             self.TextAlign = HorizontalAlignment.Left
             self.ForeColor = Color.Black
-            if sender is self:
-                self.LOGGER.debug("User focus on '{}' formbox".format(self._placeholder))
+        if sender is self:
+            self.LOGGER.info("User focus on '{}' formbox".format(self.placeholder))
 
     def lose_focus(self, sender, args):
         if self.Text == "":
@@ -37,11 +69,21 @@ class Formbox(TextBox):
             self.TextAlign = HorizontalAlignment.Center
             self.ForeColor = Color.Gray
 
+    ########################################
+
+    #  CLASS METHODS #######################
+
     def get_text(self):
-        if self.TextAlign == HorizontalAlignment.Center and self.Text == self._placeholder:
-            return ""
+        if self.TextAlign == HorizontalAlignment.Center and self.Text == self.placeholder:
+            text = ""
         else:
-            return self.Text
+            text = self.Text
+
+        if self.formtype is str:
+            return text
+        elif self.formtype is Array[str]:
+            split_text = text.split(';')
+            return Array[str](split_text)
 
     def set_text(self, text):
         if not(text == "" or text is None):
@@ -54,4 +96,4 @@ class Formbox(TextBox):
             else:
                 self.LOGGER.critical("Invalid typed object passed into set_text method.")
                 raise TypeError("Unexpected object type {}. Expected type for field is {}"
-                                .format(tag_type, self._formtype))
+                                .format(tag_type, self.formtype))
