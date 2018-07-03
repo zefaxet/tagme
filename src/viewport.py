@@ -12,6 +12,9 @@ from System.IO import MemoryStream
 clr.AddReference("System.Net")
 from System.Net import WebClient
 
+clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
+from TagLib import File
+
 from formbox import Formbox
 from FileInterface import FileInterface
 
@@ -173,7 +176,8 @@ def load_file(object, sender):
         FORMBOXES["Genre"].setup(FI.get_genre, FI.set_genre)
         FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
         FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
-        
+
+        COVER_ART.Image = Bitmap(MemoryStream(FI.get_picture().Data.Data))
 
 def apply_changes(object, sender):
     LOGGER.info("Applying changes...")
@@ -188,7 +192,7 @@ def apply_changes(object, sender):
 
 
 def tagme(object, sender):
-    print FORMBOXES["Album"].get_text()
+    t = File.Create(FI.get_picture().Data)
 
 
 LOAD_BUTTON.Click += load_file

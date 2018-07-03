@@ -24,7 +24,7 @@ class FileInterface:
 
     #  TODO figure this cunt out
     def get_picture(self):
-        return self.file.Tag.Pictures[0].Data
+        return self.file.Tag.Pictures[0]
 
     def set_picture(self, data):
         self.file.Tag.Pictures[0].Data = data
