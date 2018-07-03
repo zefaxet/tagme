@@ -16,13 +16,13 @@ class Formbox(TextBox):
     LOGGER = create_logger('Formbox')
     VALID_TYPES = [str, Array[str], UInt32]
 
-    def __init__(self, placeholdertext, getter_method, setter_method, formtype=str):
+    def __init__(self, placeholdertext, formtype=str):
         TextBox.__init__(self)
         self.LOGGER.info("Initializing formbox {}.".format(placeholdertext))
         self.Enter += self.__receive_focus
         self.Leave += self.__lose_focus
-        self.getter = getter_method
-        self.setter = setter_method
+        self.tag_getter_method = None
+        self.tag_setter_method = None
         self.placeholder = placeholdertext
         self.formtype = formtype
         self.original = None
@@ -75,11 +75,18 @@ class Formbox(TextBox):
     #  CLASS METHODS #######################
 
     #  Sets the value for the formbox to default to on clear
-    def setup(self, text):
+    def setup(self, getter, setter):
         self.LOGGER.info("Extracting tag '{}': {}".format(self.placeholder,
-                                                          "#NO TAG EXTRACTED#" if text is None else text))
-        self.original = text
-        self.set_text(text)
+                                                          "#NO TAG EXTRACTED#" if getter() is None else getter()))
+        self.tag_getter_method = getter
+        self.tag_setter_method = setter
+        print self.placeholder, self.tag_getter_method()
+        self.original = self.tag_getter_method()
+        self.set_text(self.tag_getter_method())
+
+    def apply(self):
+
+        self.tag_setter_method(self.get_text())
 
     def get_text(self):
         if self.TextAlign == HorizontalAlignment.Center and self.Text == self.placeholder:

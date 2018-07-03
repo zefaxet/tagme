@@ -102,25 +102,25 @@ ART_AREA.Controls.Add(COVER_ART)
 
 #  Construct four identical textboxes
 #  Each Formbox is 40 units above the next
-FORMBOXES["Title"] = Formbox("Title", FI.get_title, FI.set_title)
+FORMBOXES["Title"] = Formbox("Title")
 FORMBOXES["Title"].Width = 250
 FORMBOXES["Title"].Top = 35
 FORMBOXES["Title"].Left = 20
 INFO_AREA.Controls.Add(FORMBOXES["Title"])
 
-FORMBOXES["Album"] = Formbox("Album", FI.get_album, FI.set_album)
+FORMBOXES["Album"] = Formbox("Album")
 FORMBOXES["Album"].Width = 250
 FORMBOXES["Album"].Top = 75
 FORMBOXES["Album"].Left = 20
 INFO_AREA.Controls.Add(FORMBOXES["Album"])
 
-FORMBOXES["Album Artist"] = Formbox("Main Artist", FI.get_main_artist, FI.set_main_artist)
+FORMBOXES["Album Artist"] = Formbox("Main Artist")
 FORMBOXES["Album Artist"].Width = 250
 FORMBOXES["Album Artist"].Top = 115
 FORMBOXES["Album Artist"].Left = 20
 INFO_AREA.Controls.Add(FORMBOXES["Album Artist"])
 
-FORMBOXES["Contributing Artists"] = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1], FI.get_album, FI.set_album)
+FORMBOXES["Contributing Artists"] = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1])
 FORMBOXES["Contributing Artists"].Width = 250
 FORMBOXES["Contributing Artists"].Top = 155
 FORMBOXES["Contributing Artists"].Left = 20
@@ -159,30 +159,32 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 
 def load_file(object, sender):
 
+    global FI
     path = LOAD_TEXTBOX.get_text()
     if path:
         LOGGER.info("Loading file: {}".format(path))
         FI = FileInterface(path)
         LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
 
-        FORMBOXES["Title"].setup(FI.get_title())
-        FORMBOXES["Album"].setup(FI.get_album())
-        FORMBOXES["Album Artist"].setup(FI.get_main_artist())
-        FORMBOXES["Contributing Artists"].setup(FI.get_performers())
-        FORMBOXES["Genre"].setup(FI.get_genre())
-        FORMBOXES["Year"].setup(FI.get_year())
-        FORMBOXES["Track #"].setup(FI.get_track_number())
+        FORMBOXES["Title"].setup(FI.get_title, FI.set_title)
+        FORMBOXES["Album"].setup(FI.get_album, FI.set_album)
+        FORMBOXES["Album Artist"].setup(FI.get_main_artist, FI.set_main_artist)
+        FORMBOXES["Contributing Artists"].setup(FI.get_performers, FI.set_performers)
+        FORMBOXES["Genre"].setup(FI.get_genre, FI.set_genre)
+        FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
+        FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
         
 
 def apply_changes(object, sender):
     LOGGER.info("Applying changes...")
-    global FI
     for form in FORMBOXES.keys():
         box = FORMBOXES[form]
         if box.get_text() != box.original:
+            print box.get_text(), box.original
             LOGGER.info("Change found in formbox '{}'. Applying: '{}' -> '{}'".format(box.placeholder,
                                                                                   box.original, box.get_text()))
-    #FI.file.Save()
+            box.apply()
+    FI.file.Save()
 
 
 def tagme(object, sender):
