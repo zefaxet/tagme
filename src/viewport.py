@@ -16,6 +16,7 @@ from formbox import Formbox
 from FileInterface import FileInterface
 
 LOGGER = create_logger('Viewport')
+FORMBOXES = {}
 FI = None
 
 LOGGER.info("Booting viewport.")
@@ -101,47 +102,47 @@ ART_AREA.Controls.Add(COVER_ART)
 
 #  Construct four identical textboxes
 #  Each Formbox is 40 units above the next
-TITLE_FIELD = Formbox("Title")
-TITLE_FIELD.Width = 250
-TITLE_FIELD.Top = 35
-TITLE_FIELD.Left = 20
-INFO_AREA.Controls.Add(TITLE_FIELD)
+FORMBOXES["Title"] = Formbox("Title")
+FORMBOXES["Title"].Width = 250
+FORMBOXES["Title"].Top = 35
+FORMBOXES["Title"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Title"])
 
-ALBUM_FIELD = Formbox("Album")
-ALBUM_FIELD.Width = 250
-ALBUM_FIELD.Top = 75
-ALBUM_FIELD.Left = 20
-INFO_AREA.Controls.Add(ALBUM_FIELD)
+FORMBOXES["Album"] = Formbox("Album")
+FORMBOXES["Album"].Width = 250
+FORMBOXES["Album"].Top = 75
+FORMBOXES["Album"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Album"])
 
-MAIN_ARTIST = Formbox("Main Artist")
-MAIN_ARTIST.Width = 250
-MAIN_ARTIST.Top = 115
-MAIN_ARTIST.Left = 20
-INFO_AREA.Controls.Add(MAIN_ARTIST)
+FORMBOXES["Album Artist"] = Formbox("Main Artist")
+FORMBOXES["Album Artist"].Width = 250
+FORMBOXES["Album Artist"].Top = 115
+FORMBOXES["Album Artist"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Album Artist"])
 
-CONTRIBUTING_ARTISTS = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1])
-CONTRIBUTING_ARTISTS.Width = 250
-CONTRIBUTING_ARTISTS.Top = 155
-CONTRIBUTING_ARTISTS.Left = 20
-INFO_AREA.Controls.Add(CONTRIBUTING_ARTISTS)
+FORMBOXES["Contributing Artists"] = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1])
+FORMBOXES["Contributing Artists"].Width = 250
+FORMBOXES["Contributing Artists"].Top = 155
+FORMBOXES["Contributing Artists"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Contributing Artists"])
 
-GENRE = Formbox("Genre", Formbox.VALID_TYPES[1])
-GENRE.Width = 250
-GENRE.Top = 195
-GENRE.Left = 20
-INFO_AREA.Controls.Add(GENRE)
+FORMBOXES["Genre"] = Formbox("Genre", Formbox.VALID_TYPES[1])
+FORMBOXES["Genre"].Width = 250
+FORMBOXES["Genre"].Top = 195
+FORMBOXES["Genre"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Genre"])
 #########################################
 
 #  UNDERLYING INFORMATION AREA CONTROLS #
-DEBUT_YEAR = Formbox("Year", Formbox.VALID_TYPES[2])
-DEBUT_YEAR.Top = 10
-DEBUT_YEAR.Left = UNDERLYING_INFORMATION_AREA.Width - 270
-UNDERLYING_INFORMATION_AREA.Controls.Add(DEBUT_YEAR)
+FORMBOXES["Year"] = Formbox("Year", Formbox.VALID_TYPES[2])
+FORMBOXES["Year"].Top = 10
+FORMBOXES["Year"].Left = UNDERLYING_INFORMATION_AREA.Width - 270
+UNDERLYING_INFORMATION_AREA.Controls.Add(FORMBOXES["Year"])
 
-TRACK = Formbox("Track #", Formbox.VALID_TYPES[2])
-TRACK.Top = 10
-TRACK.Left = UNDERLYING_INFORMATION_AREA.Width - 120
-UNDERLYING_INFORMATION_AREA.Controls.Add(TRACK)
+FORMBOXES["Track #"] = Formbox("Track #", Formbox.VALID_TYPES[2])
+FORMBOXES["Track #"].Top = 10
+FORMBOXES["Track #"].Left = UNDERLYING_INFORMATION_AREA.Width - 120
+UNDERLYING_INFORMATION_AREA.Controls.Add(FORMBOXES["Track #"])
 
 APPLY_BUTTON = Button()
 APPLY_BUTTON.Text = "Apply"
@@ -157,10 +158,6 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 
 
 def load_file(object, sender):
-    global FI
-    global LOAD_TEXTBOX
-    global TITLE_FIELD
-    global ALBUM_FIELD
 
     path = LOAD_TEXTBOX.get_text()
     if path:
@@ -168,44 +165,26 @@ def load_file(object, sender):
         FI = FileInterface(path)
         LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
 
-        song_title = FI.get_title()
-        TITLE_FIELD.set_text(song_title)
-        LOGGER.info("Extracted tag 'Title': {}".format("#NO TAG EXTRACTED#" if song_title is None else song_title))
-
-        album_title = FI.get_album()
-        ALBUM_FIELD.set_text(album_title)
-        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if album_title is None else album_title))
-
-        main_artist = FI.get_main_artist()
-        MAIN_ARTIST.set_text(main_artist)
-        LOGGER.info("Extracted tag 'Album Artist': {}".format(
-            "#NO TAG EXTRACTED#" if main_artist is None else main_artist))
-
-        contributing_artists = FI.get_performers()
-        CONTRIBUTING_ARTISTS.set_text(contributing_artists)
-        LOGGER.info("Extracted tag 'Contributing Artists': {}".format(
-            "#NO TAG EXTRACTED#" if contributing_artists is None else contributing_artists))
-
-        genres = FI.get_genre()
-        GENRE.set_text(genres)
-        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if genres is None else genres))
-
-        year = FI.get_year()
-        DEBUT_YEAR.set_text(year)
-        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if year is None else year))
-
-        track = FI.get_track_number()
-        TRACK.set_text(track)
-        LOGGER.info("Extracted tag 'Album': {}".format("#NO TAG EXTRACTED#" if track is None else track))
+        FORMBOXES["Title"].setup(FI.get_title())
+        FORMBOXES["Album"].setup(FI.get_album())
+        FORMBOXES["Album Artist"].setup(FI.get_main_artist())
+        FORMBOXES["Contributing Artists"].setup(FI.get_performers())
+        FORMBOXES["Genre"].setup(FI.get_genre())
+        FORMBOXES["Year"].setup(FI.get_year())
+        FORMBOXES["Track #"].setup(FI.get_track_number())
         
 
 def apply_changes(object, sender):
     LOGGER.info("Applying changes...")
-    FI.set_album(None)
-    FI.file.Save()
+    global FI
+    for form in FORMBOXES.keys():
+        box = FORMBOXES[form]
+        print box.get_text() == box.original, box.placeholder
+    #FI.file.Save()
+
 
 def tagme(object, sender):
-    print "tagme"
+    print FORMBOXES["Album"].get_text()
 
 
 LOAD_BUTTON.Click += load_file

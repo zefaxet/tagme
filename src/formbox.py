@@ -18,14 +18,16 @@ class Formbox(TextBox):
 
     def __init__(self, placeholdertext, formtype=str):
         TextBox.__init__(self)
-        self.Enter += self.receive_focus
-        self.Leave += self.lose_focus
-        self._placeholder = placeholdertext
+        self.LOGGER.info("Initializing formbox {}.".format(placeholdertext))
+        self.Enter += self.__receive_focus
+        self.Leave += self.__lose_focus
+        self.placeholder = placeholdertext
         self.formtype = formtype
+        self.original = None
 
-        self.lose_focus(None, None)
+        #  Initalize formbox to placeholder text/styling
+        self.__clear()
 
-        self.LOGGER.info("Initializing formbox {}.".format(self.placeholder))
 
     #  FIELDS ##############################
 
@@ -55,15 +57,14 @@ class Formbox(TextBox):
 
     #  WINDOWS FORMS EVENTS ################
 
-    def receive_focus(self, sender, args):
+    def __receive_focus(self, sender, args):
+        #  HAlign will only be centered if the form is in placeholder state
         if self.TextAlign == HorizontalAlignment.Center:
-            self.Text = ""
-            self.TextAlign = HorizontalAlignment.Left
-            self.ForeColor = Color.Black
+            self.__prepare()
         if sender is self:
             self.LOGGER.info("User focus on '{}' formbox".format(self.placeholder))
 
-    def lose_focus(self, sender, args):
+    def __lose_focus(self, sender, args):
         if self.Text == "":
             self.__clear()
 
@@ -71,14 +72,25 @@ class Formbox(TextBox):
 
     #  CLASS METHODS #######################
 
+    #  Sets the value for the formbox to default to on clear
+    def setup(self, text):
+        self.LOGGER.info("Extracting tag '{}': {}".format(self.placeholder,
+                                                          "#NO TAG EXTRACTED#" if text is None else text))
+        self.original = text
+        self.set_text(text)
+
     def get_text(self):
         if self.TextAlign == HorizontalAlignment.Center and self.Text == self.placeholder:
-            text = ""
+            text = None
         else:
             text = self.Text
 
         if self.formtype is str:
             return text
+        elif self.formtype is UInt32:
+            self.LOGGER.info("Converting integer string {} in formbox '{}' to type UInt32.".format(text,
+                                                                                                 self.placeholder))
+            return UInt32(text)
         elif self.formtype is Array[str]:
             split_text = text.split(';')
             return Array[str](split_text)
@@ -86,7 +98,10 @@ class Formbox(TextBox):
     def set_text(self, text):
         if not(text == "" or text is None):
             tag_type = type(text)
-            self.receive_focus(None, None)
+
+            #  clear placeholder formatting
+            self.__prepare()
+
             if tag_type is str:
                 self.Text = text
             elif tag_type is UInt32:
@@ -109,3 +124,8 @@ class Formbox(TextBox):
         self.Text = self.placeholder
         self.TextAlign = HorizontalAlignment.Center
         self.ForeColor = Color.Gray
+
+    def __prepare(self):
+        self.Text = ""
+        self.TextAlign = HorizontalAlignment.Left
+        self.ForeColor = Color.Black
