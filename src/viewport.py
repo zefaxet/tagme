@@ -102,25 +102,25 @@ ART_AREA.Controls.Add(COVER_ART)
 
 #  Construct four identical textboxes
 #  Each Formbox is 40 units above the next
-FORMBOXES["Title"] = Formbox("Title")
+FORMBOXES["Title"] = Formbox("Title", FI.get_title, FI.set_title)
 FORMBOXES["Title"].Width = 250
 FORMBOXES["Title"].Top = 35
 FORMBOXES["Title"].Left = 20
 INFO_AREA.Controls.Add(FORMBOXES["Title"])
 
-FORMBOXES["Album"] = Formbox("Album")
+FORMBOXES["Album"] = Formbox("Album", FI.get_album, FI.set_album)
 FORMBOXES["Album"].Width = 250
 FORMBOXES["Album"].Top = 75
 FORMBOXES["Album"].Left = 20
 INFO_AREA.Controls.Add(FORMBOXES["Album"])
 
-FORMBOXES["Album Artist"] = Formbox("Main Artist")
+FORMBOXES["Album Artist"] = Formbox("Main Artist", FI.get_main_artist, FI.set_main_artist)
 FORMBOXES["Album Artist"].Width = 250
 FORMBOXES["Album Artist"].Top = 115
 FORMBOXES["Album Artist"].Left = 20
 INFO_AREA.Controls.Add(FORMBOXES["Album Artist"])
 
-FORMBOXES["Contributing Artists"] = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1])
+FORMBOXES["Contributing Artists"] = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1], FI.get_album, FI.set_album)
 FORMBOXES["Contributing Artists"].Width = 250
 FORMBOXES["Contributing Artists"].Top = 155
 FORMBOXES["Contributing Artists"].Left = 20
@@ -179,7 +179,9 @@ def apply_changes(object, sender):
     global FI
     for form in FORMBOXES.keys():
         box = FORMBOXES[form]
-        print box.get_text() == box.original, box.placeholder
+        if box.get_text() != box.original:
+            LOGGER.info("Change found in formbox '{}'. Applying: '{}' -> '{}'".format(box.placeholder,
+                                                                                  box.original, box.get_text()))
     #FI.file.Save()
 
 

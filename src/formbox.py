@@ -16,11 +16,13 @@ class Formbox(TextBox):
     LOGGER = create_logger('Formbox')
     VALID_TYPES = [str, Array[str], UInt32]
 
-    def __init__(self, placeholdertext, formtype=str):
+    def __init__(self, placeholdertext, getter_method, setter_method, formtype=str):
         TextBox.__init__(self)
         self.LOGGER.info("Initializing formbox {}.".format(placeholdertext))
         self.Enter += self.__receive_focus
         self.Leave += self.__lose_focus
+        self.getter = getter_method
+        self.setter = setter_method
         self.placeholder = placeholdertext
         self.formtype = formtype
         self.original = None
