@@ -1,7 +1,8 @@
 import sys
 sys.path.append(r'C:\Python27\Lib')
-
 import clr
+from log import create_logger
+
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment
 clr.AddReference("System.Drawing")
@@ -12,11 +13,18 @@ clr.AddReference("System.Net")
 from System.Net import WebClient
 
 from formbox import Formbox
+from FileInterface import FileInterface
+
+LOGGER = create_logger('Viewport')
+FORMBOXES = {}
+FI = None
+
+LOGGER.info("Booting viewport.")
 
 window = Form()
 window.Text = "tagme"
 window.Name = "tagme"
-window.Size = Size(500,500)
+window.Size = Size(500,300)
 window.FormBorderStyle = FormBorderStyle.FixedDialog
 
 #  TOP LEVEL CONTROLS ###################
@@ -37,11 +45,12 @@ window.Controls.Add(MUTATION_AREA)
 #########################################
 
 #  LOAD FILE CONTROLS ###################
+
 LOAD_BUTTON = Button()
 LOAD_BUTTON.Text = "Load"
 LOAD_BUTTON.Dock = DockStyle.Right
 
-LOAD_TEXTBOX = Formbox("Search for file...")
+LOAD_TEXTBOX = Formbox("Path to file...")
 LOAD_TEXTBOX.Dock = DockStyle.Left
 LOAD_TEXTBOX.Width = LOAD_AREA.Width - LOAD_BUTTON.Width
 
@@ -51,11 +60,11 @@ LOAD_AREA.Controls.Add(LOAD_TEXTBOX)
 
 #  MUTATION AREA CONTROLS ###############
 EXPLORER_VISIBLE_INFORMATION_AREA = Panel()
-EXPLORER_VISIBLE_INFORMATION_AREA.Height = MUTATION_AREA.Height / 2
+EXPLORER_VISIBLE_INFORMATION_AREA.Height = MUTATION_AREA.Height * 6 / 7
 EXPLORER_VISIBLE_INFORMATION_AREA.Dock = DockStyle.Top
 
 UNDERLYING_INFORMATION_AREA = Panel()
-UNDERLYING_INFORMATION_AREA.Height = MUTATION_AREA.Height / 2
+UNDERLYING_INFORMATION_AREA.Height = MUTATION_AREA.Height * 1 / 7
 UNDERLYING_INFORMATION_AREA.Dock = DockStyle.Bottom
 
 MUTATION_AREA.Controls.Add(UNDERLYING_INFORMATION_AREA)
@@ -79,7 +88,9 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #  ART AREA CONTROLS ####################
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
-COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+#COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+#COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
+COVER_ART.BackColor = Color.White
 COVER_ART.Size = Size(160,160)
 COVER_ART.Top = 45
 COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
@@ -91,67 +102,101 @@ ART_AREA.Controls.Add(COVER_ART)
 
 #  Construct four identical textboxes
 #  Each Formbox is 40 units above the next
-TITLE_FIELD = Formbox("Title")
-TITLE_FIELD.Width = 250
-TITLE_FIELD.Top = 35
-TITLE_FIELD.Left = 20
-INFO_AREA.Controls.Add(TITLE_FIELD)
+FORMBOXES["Title"] = Formbox("Title")
+FORMBOXES["Title"].Width = 250
+FORMBOXES["Title"].Top = 35
+FORMBOXES["Title"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Title"])
 
-ALBUM_FIELD = Formbox("Album")
-ALBUM_FIELD.Width = 250
-ALBUM_FIELD.Top = 75
-ALBUM_FIELD.Left = 20
-INFO_AREA.Controls.Add(ALBUM_FIELD)
+FORMBOXES["Album"] = Formbox("Album")
+FORMBOXES["Album"].Width = 250
+FORMBOXES["Album"].Top = 75
+FORMBOXES["Album"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Album"])
 
-MAIN_ARTIST = Formbox("Main Artist")
-MAIN_ARTIST.Width = 250
-MAIN_ARTIST.Top = 115
-MAIN_ARTIST.Left = 20
-INFO_AREA.Controls.Add(MAIN_ARTIST)
+FORMBOXES["Album Artist"] = Formbox("Main Artist")
+FORMBOXES["Album Artist"].Width = 250
+FORMBOXES["Album Artist"].Top = 115
+FORMBOXES["Album Artist"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Album Artist"])
 
-CONTRIBUTING_ARTISTS = Formbox("Contributing Artist(s)")
-CONTRIBUTING_ARTISTS.Width = 250
-CONTRIBUTING_ARTISTS.Top = 155
-CONTRIBUTING_ARTISTS.Left = 20
-INFO_AREA.Controls.Add(CONTRIBUTING_ARTISTS)
+FORMBOXES["Contributing Artists"] = Formbox("Contributing Artist(s)", Formbox.VALID_TYPES[1])
+FORMBOXES["Contributing Artists"].Width = 250
+FORMBOXES["Contributing Artists"].Top = 155
+FORMBOXES["Contributing Artists"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Contributing Artists"])
 
-GENRE = Formbox("Genre")
-GENRE.Width = 250
-GENRE.Top = 195
-GENRE.Left = 20
-INFO_AREA.Controls.Add(GENRE)
+FORMBOXES["Genre"] = Formbox("Genre", Formbox.VALID_TYPES[1])
+FORMBOXES["Genre"].Width = 250
+FORMBOXES["Genre"].Top = 195
+FORMBOXES["Genre"].Left = 20
+INFO_AREA.Controls.Add(FORMBOXES["Genre"])
 #########################################
 
 #  UNDERLYING INFORMATION AREA CONTROLS #
-DEBUT_YEAR = Formbox("Year")
-DEBUT_YEAR.Top = 10
-DEBUT_YEAR.Left = 20
-UNDERLYING_INFORMATION_AREA.Controls.Add(DEBUT_YEAR)
+FORMBOXES["Year"] = Formbox("Year", Formbox.VALID_TYPES[2])
+FORMBOXES["Year"].Top = 10
+FORMBOXES["Year"].Left = UNDERLYING_INFORMATION_AREA.Width - 270
+UNDERLYING_INFORMATION_AREA.Controls.Add(FORMBOXES["Year"])
 
-TRACK = Formbox("Track #")
-TRACK.Top = 10
-TRACK.Left = 140
-UNDERLYING_INFORMATION_AREA.Controls.Add(TRACK)
+FORMBOXES["Track #"] = Formbox("Track #", Formbox.VALID_TYPES[2])
+FORMBOXES["Track #"].Top = 10
+FORMBOXES["Track #"].Left = UNDERLYING_INFORMATION_AREA.Width - 120
+UNDERLYING_INFORMATION_AREA.Controls.Add(FORMBOXES["Track #"])
 
+APPLY_BUTTON = Button()
+APPLY_BUTTON.Text = "Apply"
+APPLY_BUTTON.Left = 15
+UNDERLYING_INFORMATION_AREA.Controls.Add(APPLY_BUTTON)
+
+FETCH_BUTTON = Button()
+FETCH_BUTTON.Text = "Tagme"
+FETCH_BUTTON.Left = 100
+UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
+
+#  Button Methods #######################
+
+
+def load_file(object, sender):
+
+    global FI
+    path = LOAD_TEXTBOX.get_text()
+    if path:
+        LOGGER.info("Loading file: {}".format(path))
+        FI = FileInterface(path)
+        LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
+
+        FORMBOXES["Title"].setup(FI.get_title, FI.set_title)
+        FORMBOXES["Album"].setup(FI.get_album, FI.set_album)
+        FORMBOXES["Album Artist"].setup(FI.get_main_artist, FI.set_main_artist)
+        FORMBOXES["Contributing Artists"].setup(FI.get_performers, FI.set_performers)
+        FORMBOXES["Genre"].setup(FI.get_genre, FI.set_genre)
+        FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
+        FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
+        
+
+def apply_changes(object, sender):
+    LOGGER.info("Applying changes...")
+    for form in FORMBOXES.keys():
+        box = FORMBOXES[form]
+        if box.get_text() != box.original:
+            print box.get_text(), box.original
+            LOGGER.info("Change found in formbox '{}'. Applying: '{}' -> '{}'".format(box.placeholder,
+                                                                                  box.original, box.get_text()))
+            box.apply()
+    FI.file.Save()
+
+
+def tagme(object, sender):
+    print FORMBOXES["Album"].get_text()
+
+
+LOAD_BUTTON.Click += load_file
+APPLY_BUTTON.Click += apply_changes
+FETCH_BUTTON.Click += tagme
+
+LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
 
 Application.EnableVisualStyles()
 Application.Run(window)
 
-
-
-# # Mutation area frame split
-# TOP_INFO = LabelFrame(MUTATION_AREA)
-# TOP_INFO.pack(side=TOP, expand=1, fill=BOTH)
-# LOWER_INFO = LabelFrame(MUTATION_AREA)
-# LOWER_INFO.pack(side=BOTTOM, expand=1, fill=BOTH)
-#
-# # Top level frame split
-# ART_FRAME = LabelFrame(TOP_INFO)
-# ART_FRAME.master.size()
-# ART_FRAME.pack(side=LEFT, expand=1, fill=BOTH, padx=5)
-# TOP_INFO_ENTRY = LabelFrame(TOP_INFO)
-# TOP_INFO_ENTRY.pack(side=RIGHT, expand=1, fill=BOTH)
-# # COVER_ART = Label(MAIN_FRAME, bg="red", bitmap=Image(file="..//drawup.png"))
-# # COVER_ART.pack(side=LEFT)
-#
-# window.mainloop()
