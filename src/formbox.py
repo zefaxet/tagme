@@ -18,7 +18,7 @@ class Formbox(TextBox):
 
     def __init__(self, placeholdertext, formtype=str):
         TextBox.__init__(self)
-        self.LOGGER.info("Initializing formbox {}.".format(placeholdertext))
+        self.LOGGER.info("Initializing formbox '{}'.".format(placeholdertext))
         self.Enter += self.__receive_focus
         self.Leave += self.__lose_focus
         self.tag_getter_method = None
@@ -89,7 +89,7 @@ class Formbox(TextBox):
 
     def get_text(self):
         if self.TextAlign == HorizontalAlignment.Center and self.Text == self.placeholder:
-            text = None
+            return None
         else:
             text = self.Text
 

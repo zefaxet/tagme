@@ -26,11 +26,11 @@ class FileInterface:
         self.file.Tag.Album = value
 
     #  TODO add other covers
-    def get_front_cover(self):
-        return self.file.Tag.Pictures[0]
+    def get_pictures(self):
+        return self.file.Tag.Pictures
 
-    def set_front_cover(self, data):
-        self.file.Tag.Pictures[0].Data = data
+    def set_pictures(self, pictures):
+        self.file.Tag.Pictures = pictures
 
     def get_main_artist(self):
         return self.file.Tag.AlbumArtists[0]

@@ -54,6 +54,7 @@ window.Controls.Add(MUTATION_AREA)
 
 #  LOAD FILE CONTROLS ###################
 
+# TODO load button becomes "Unload" if file is loaded and the textbox is empty
 LOAD_BUTTON = Button()
 LOAD_BUTTON.Text = "Load"
 LOAD_BUTTON.Dock = DockStyle.Right
@@ -93,11 +94,11 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(ART_AREA)
 EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #########################################
 
+# TODO add dropdown to modify each of the album art tags
 #  ART AREA CONTROLS ####################
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
 # COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
-# COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
 COVER_ART.BackColor = Color.White
 COVER_ART.Size = Size(160, 160)
 COVER_ART.Top = 45
@@ -155,11 +156,13 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FORMBOXES["Track #"])
 APPLY_BUTTON = Button()
 APPLY_BUTTON.Text = "Apply"
 APPLY_BUTTON.Left = 15
+APPLY_BUTTON.Enabled = False
 UNDERLYING_INFORMATION_AREA.Controls.Add(APPLY_BUTTON)
 
 FETCH_BUTTON = Button()
 FETCH_BUTTON.Text = "Tagme"
 FETCH_BUTTON.Left = 100
+FETCH_BUTTON.Enabled = False
 UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 
 
@@ -168,6 +171,7 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 
 def load_file(object, sender):
     global FI
+    APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled = True, True
     path = LOAD_TEXTBOX.get_text()
     if path:
         LOGGER.info("Loading file: {}".format(path))
@@ -182,7 +186,12 @@ def load_file(object, sender):
         FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
         FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
 
-        COVER_ART.Image = Bitmap(MemoryStream(FI.get_front_cover().Data.Data))
+        try:
+            bitmap = Bitmap(MemoryStream(FI.get_pictures()[0].Data.Data))
+        except IndexError:
+            bitmap = None
+
+        COVER_ART.Image = bitmap
 
 
 def apply_changes(object, sender):
@@ -194,19 +203,24 @@ def apply_changes(object, sender):
                                                                             box.original, box.get_text()))
             changed_forms.append(form)
         changed_forms.reverse()
-    response = MessageBox.Show(
-        "Are you sure that you want to apply the changes made? Changes have occurred to the following tags: {}"
-        .format(", ".join(changed_forms)), "Confirm", MessageBoxButtons.YesNo)
-    if response == DialogResult.Yes:
-        LOGGER.info("Applying changes...")
-        for form in changed_forms:
-            box = FORMBOXES[form]
-            LOGGER.info("Applying change in formbox '{}': '{}' -> '{}'".format(box.placeholder,
-                                                                               box.original, box.get_text()))
-            box.apply()
-        FI.file.Save()
-    elif response == DialogResult.No:
-        print "nah"
+    if len(changed_forms):
+        response = MessageBox.Show(
+            "Are you sure that you want to apply the changes made? Changes have occurred to the following tags: {}"
+            .format(", ".join(changed_forms)), "Confirm changes", MessageBoxButtons.YesNo)
+        if response == DialogResult.Yes:
+            LOGGER.info("Applying changes...")
+            for form in changed_forms:
+                box = FORMBOXES[form]
+                LOGGER.info("Applying change in formbox '{}': '{}' -> '{}'".format(box.placeholder,
+                                                                                   box.original, box.get_text()))
+                box.apply()
+            FI.file.Save()
+        elif response == DialogResult.No:
+            print "nah"
+    else:
+        MessageBox.Show(
+            "There are no changes to apply.", "Confirm changes"
+        )
 
 
 def tagme(object, sender):
@@ -217,7 +231,7 @@ LOAD_BUTTON.Click += load_file
 APPLY_BUTTON.Click += apply_changes
 FETCH_BUTTON.Click += tagme
 
-LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
+LOAD_TEXTBOX.set_text(r'../test/Roundabout.flac')
 
 Application.EnableVisualStyles()
 Application.Run(window)
