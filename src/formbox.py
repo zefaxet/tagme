@@ -80,7 +80,6 @@ class Formbox(TextBox):
                                                           "#NO TAG EXTRACTED#" if getter() is None else getter()))
         self.tag_getter_method = getter
         self.tag_setter_method = setter
-        print self.placeholder, self.tag_getter_method()
         self.original = self.tag_getter_method()
         self.set_text(self.tag_getter_method())
 

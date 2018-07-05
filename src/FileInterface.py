@@ -5,15 +5,18 @@ import clr
 clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
 from TagLib import File
 
+
 class FileInterface:
 
     def __init__(self, path=""):
+        # type: (str) -> None
         self.file = File.Create(path)
 
     def get_title(self):
         return self.file.Tag.Title
 
     def set_title(self, value):
+        # type: (str) -> None
         self.file.Tag.Title = value
 
     def get_album(self):
@@ -22,11 +25,11 @@ class FileInterface:
     def set_album(self, value):
         self.file.Tag.Album = value
 
-    #  TODO figure this cunt out
-    def get_picture(self):
+    #  TODO add other covers
+    def get_front_cover(self):
         return self.file.Tag.Pictures[0]
 
-    def set_picture(self, data):
+    def set_front_cover(self, data):
         self.file.Tag.Pictures[0].Data = data
 
     def get_main_artist(self):

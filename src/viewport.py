@@ -1,14 +1,19 @@
 import sys
+
 sys.path.append(r'C:\Python27\Lib')
 import clr
 from log import create_logger
 
 clr.AddReference("System.Windows.Forms")
-from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment
+from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, \
+    DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment, MessageBox, MessageBoxButtons, DialogResult
+
 clr.AddReference("System.Drawing")
 from System.Drawing import Size, Color, Image, Bitmap
+
 clr.AddReference("System.IO")
 from System.IO import MemoryStream
+
 clr.AddReference("System.Net")
 from System.Net import WebClient
 
@@ -27,12 +32,12 @@ LOGGER.info("Booting viewport.")
 window = Form()
 window.Text = "tagme"
 window.Name = "tagme"
-window.Size = Size(500,300)
+window.Size = Size(500, 300)
 window.FormBorderStyle = FormBorderStyle.FixedDialog
 
 #  TOP LEVEL CONTROLS ###################
 LOAD_AREA = Panel()
-#LOAD_AREA.BorderStyle = BorderStyle.FixedSingle
+# LOAD_AREA.BorderStyle = BorderStyle.FixedSingle
 LOAD_AREA.Width = window.ClientRectangle.Width
 LOAD_AREA.Height = 20
 LOAD_AREA.Dock = DockStyle.Top
@@ -41,9 +46,9 @@ window.Controls.Add(LOAD_AREA)
 MUTATION_AREA = Panel()
 MUTATION_AREA.Width = LOAD_AREA.Width
 MUTATION_AREA.Height = LOAD_AREA.Height
-#MUTATION_AREA.BorderStyle = BorderStyle.FixedSingle
+# MUTATION_AREA.BorderStyle = BorderStyle.FixedSingle
 MUTATION_AREA.Dock = DockStyle.Fill
-#MUTATION_AREA.BackColor = Color.Red
+# MUTATION_AREA.BackColor = Color.Red
 window.Controls.Add(MUTATION_AREA)
 #########################################
 
@@ -82,7 +87,7 @@ ART_AREA.Dock = DockStyle.Left
 INFO_AREA = Panel()
 INFO_AREA.Width = EXPLORER_VISIBLE_INFORMATION_AREA.Width * 0.6
 INFO_AREA.Dock = DockStyle.Right
-#INFO_AREA.BackColor = Color.Blue
+# INFO_AREA.BackColor = Color.Blue
 
 EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(ART_AREA)
 EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
@@ -91,10 +96,10 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #  ART AREA CONTROLS ####################
 COVER_ART = PictureBox()
 COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
-#COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
-#COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
+# COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+# COVER_ART.Image = Bitmap(FileInterface(r'../test/Blackened.mp3').GetPicture)
 COVER_ART.BackColor = Color.White
-COVER_ART.Size = Size(160,160)
+COVER_ART.Size = Size(160, 160)
 COVER_ART.Top = 45
 COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
 
@@ -157,11 +162,11 @@ FETCH_BUTTON.Text = "Tagme"
 FETCH_BUTTON.Left = 100
 UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 
+
 #  Button Methods #######################
 
 
 def load_file(object, sender):
-
     global FI
     path = LOAD_TEXTBOX.get_text()
     if path:
@@ -177,22 +182,35 @@ def load_file(object, sender):
         FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
         FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
 
-        COVER_ART.Image = Bitmap(MemoryStream(FI.get_picture().Data.Data))
+        COVER_ART.Image = Bitmap(MemoryStream(FI.get_front_cover().Data.Data))
+
 
 def apply_changes(object, sender):
-    LOGGER.info("Applying changes...")
+    changed_forms = []
     for form in FORMBOXES.keys():
         box = FORMBOXES[form]
         if box.get_text() != box.original:
-            print box.get_text(), box.original
-            LOGGER.info("Change found in formbox '{}'. Applying: '{}' -> '{}'".format(box.placeholder,
-                                                                                  box.original, box.get_text()))
+            LOGGER.info("Change found in formbox '{}': '{}' -> '{}'".format(box.placeholder,
+                                                                            box.original, box.get_text()))
+            changed_forms.append(form)
+        changed_forms.reverse()
+    response = MessageBox.Show(
+        "Are you sure that you want to apply the changes made? Changes have occurred to the following tags: {}"
+        .format(", ".join(changed_forms)), "Confirm", MessageBoxButtons.YesNo)
+    if response == DialogResult.Yes:
+        LOGGER.info("Applying changes...")
+        for form in changed_forms:
+            box = FORMBOXES[form]
+            LOGGER.info("Applying change in formbox '{}': '{}' -> '{}'".format(box.placeholder,
+                                                                               box.original, box.get_text()))
             box.apply()
-    FI.file.Save()
+        FI.file.Save()
+    elif response == DialogResult.No:
+        print "nah"
 
 
 def tagme(object, sender):
-    t = File.Create(FI.get_picture().Data)
+    print MessageBox.Show("test", "?", MessageBoxButtons.YesNo)
 
 
 LOAD_BUTTON.Click += load_file
@@ -203,4 +221,3 @@ LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
 
 Application.EnableVisualStyles()
 Application.Run(window)
-
