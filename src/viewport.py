@@ -6,7 +6,8 @@ from log import create_logger
 
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, \
-    DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment, MessageBox, MessageBoxButtons, DialogResult
+    DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment, MessageBox, MessageBoxButtons, DialogResult, \
+    ListBox
 
 clr.AddReference("System.Drawing")
 from System.Drawing import Size, Color, Image, Bitmap
@@ -96,15 +97,20 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 
 # TODO add dropdown to modify each of the album art tags
 #  ART AREA CONTROLS ####################
-COVER_ART = PictureBox()
-COVER_ART.SizeMode = PictureBoxSizeMode.StretchImage
-# COVER_ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
-COVER_ART.BackColor = Color.White
-COVER_ART.Size = Size(160, 160)
-COVER_ART.Top = 45
-COVER_ART.Left = (ART_AREA.Width - COVER_ART.Width) / 2
+ART_SELECTOR = ListBox()
+ART_SELECTOR.Size = Size(100, 20)
+ART_SELECTOR.Top = 23
 
-ART_AREA.Controls.Add(COVER_ART)
+ART = PictureBox()
+ART.SizeMode = PictureBoxSizeMode.StretchImage
+# ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+ART.BackColor = Color.White
+ART.Size = Size(160, 160)
+ART.Top = 45
+ART.Left = (ART_AREA.Width - ART.Width) / 2
+
+ART_AREA.Controls.Add(ART_SELECTOR)
+ART_AREA.Controls.Add(ART)
 #########################################
 
 #  INFO AREA CONTROLS ###################
@@ -191,7 +197,7 @@ def load_file(object, sender):
         except IndexError:
             bitmap = None
 
-        COVER_ART.Image = bitmap
+        ART.Image = bitmap
 
 
 def apply_changes(object, sender):
@@ -231,7 +237,7 @@ LOAD_BUTTON.Click += load_file
 APPLY_BUTTON.Click += apply_changes
 FETCH_BUTTON.Click += tagme
 
-LOAD_TEXTBOX.set_text(r'../test/Roundabout.flac')
+LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
 
 Application.EnableVisualStyles()
 Application.Run(window)
