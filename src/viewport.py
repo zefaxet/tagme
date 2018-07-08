@@ -7,7 +7,7 @@ from log import create_logger
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, \
     DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment, MessageBox, MessageBoxButtons, DialogResult, \
-    ListBox
+    ComboBox, ComboBoxStyle
 
 clr.AddReference("System.Drawing")
 from System.Drawing import Size, Color, Image, Bitmap
@@ -26,6 +26,7 @@ from FileInterface import FileInterface
 
 LOGGER = create_logger('Viewport')
 FORMBOXES = {}
+ART_SELECTOR_LIST_ITEMS = ["Front Cover", "Back Cover"]
 FI = None
 
 LOGGER.info("Booting viewport.")
@@ -97,16 +98,22 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 
 # TODO add dropdown to modify each of the album art tags
 #  ART AREA CONTROLS ####################
-ART_SELECTOR = ListBox()
+ART_SELECTOR = ComboBox()
 ART_SELECTOR.Size = Size(100, 20)
-ART_SELECTOR.Top = 23
+ART_SELECTOR.Top = 26
+ART_SELECTOR.Left = (ART_AREA.Width - ART_SELECTOR.Width) / 2
+ART_SELECTOR.DropDownStyle = ComboBoxStyle.DropDownList
+for item in ART_SELECTOR_LIST_ITEMS:
+    ART_SELECTOR.Items.Add(item)
+ART_SELECTOR.SelectedItem = ART_SELECTOR.Items[0]
+ART_SELECTOR.Enabled = False
 
 ART = PictureBox()
 ART.SizeMode = PictureBoxSizeMode.StretchImage
 # ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
 ART.BackColor = Color.White
 ART.Size = Size(160, 160)
-ART.Top = 45
+ART.Top = 50
 ART.Left = (ART_AREA.Width - ART.Width) / 2
 
 ART_AREA.Controls.Add(ART_SELECTOR)
@@ -175,9 +182,9 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 #  Button Methods #######################
 
 
-def load_file(object, sender):
+def load_file(sender, args):
     global FI
-    APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled = True, True
+    APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled, ART_SELECTOR.Enabled = [True] * 3
     path = LOAD_TEXTBOX.get_text()
     if path:
         LOGGER.info("Loading file: {}".format(path))
@@ -200,7 +207,7 @@ def load_file(object, sender):
         ART.Image = bitmap
 
 
-def apply_changes(object, sender):
+def apply_changes(sender, args):
     changed_forms = []
     for form in FORMBOXES.keys():
         box = FORMBOXES[form]
@@ -229,13 +236,20 @@ def apply_changes(object, sender):
         )
 
 
-def tagme(object, sender):
-    print MessageBox.Show("test", "?", MessageBoxButtons.YesNo)
+def tagme(sender, args):
+    print dir(ART_SELECTOR)
+
+#  ComboBox Events ######################
+
+def update_art(sender, args):
+    LOGGER.info("Selected file art changed to '{}'.".format(sender.SelectedItem))
 
 
 LOAD_BUTTON.Click += load_file
 APPLY_BUTTON.Click += apply_changes
 FETCH_BUTTON.Click += tagme
+
+ART_SELECTOR.SelectedValueChanged += update_art
 
 LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
 
