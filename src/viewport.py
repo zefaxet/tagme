@@ -1,28 +1,37 @@
-import sys
+# region Imports
 
-sys.path.append(r'C:\Python27\Lib')
+# region .NET Imports
 import clr
-from log import create_logger
 
+# clr.AddReference("System")
 clr.AddReference("System.Windows.Forms")
-from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, BorderStyle, Label, Button, TextBox, \
-    DockStyle, PictureBox, PictureBoxSizeMode, HorizontalAlignment, MessageBox, MessageBoxButtons, DialogResult, \
+from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, Button, DockStyle, PictureBox, PictureBoxSizeMode, \
+    MessageBox, MessageBoxButtons, DialogResult, \
     ComboBox, ComboBoxStyle
 
+# TODO Add icon for taskbar and form if possible
 clr.AddReference("System.Drawing")
-from System.Drawing import Size, Color, Image, Bitmap
+from System.Drawing import Size, Color, Bitmap#, Icon
 
 clr.AddReference("System.IO")
 from System.IO import MemoryStream
 
-clr.AddReference("System.Net")
-from System.Net import WebClient
+# clr.AddReference("System.Net")
 
-clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
-from TagLib import File
+# endregion
 
-from formbox import Formbox
+# region Python/Project Imports
+
+import sys
+from util.log import create_logger
+from widget.formbox import Formbox
 from FileInterface import FileInterface
+
+# endregion
+
+# endregion
+
+sys.path.append(r'C:\Python27\Lib')
 
 LOGGER = create_logger('Viewport')
 FORMBOXES = {}
@@ -108,9 +117,10 @@ for item in ART_SELECTOR_LIST_ITEMS:
 ART_SELECTOR.SelectedItem = ART_SELECTOR.Items[0]
 ART_SELECTOR.Enabled = False
 
+# TODO Create new class for this widget
 ART = PictureBox()
 ART.SizeMode = PictureBoxSizeMode.StretchImage
-# ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+#  ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
 ART.BackColor = Color.White
 ART.Size = Size(160, 160)
 ART.Top = 50
@@ -202,10 +212,10 @@ def load_file(sender, args):
         try:
             bitmap = Bitmap(MemoryStream(FI.get_pictures()[0].Data.Data))
         except IndexError:
+            # TODO add placeholder bitmap for empty art
             bitmap = None
 
         ART.Image = bitmap
-
 
 def apply_changes(sender, args):
     changed_forms = []
@@ -237,12 +247,17 @@ def apply_changes(sender, args):
 
 
 def tagme(sender, args):
-    print dir(ART_SELECTOR)
+    print "tagme"
 
 #  ComboBox Events ######################
 
+
 def update_art(sender, args):
+    # TODO add placeholder bitmap for empty art
+    # TODO update art based on status of selector
     LOGGER.info("Selected file art changed to '{}'.".format(sender.SelectedItem))
+    #bitmap = Bitmap(MemoryStream())
+    #ART.Image
 
 
 LOAD_BUTTON.Click += load_file
@@ -251,7 +266,65 @@ FETCH_BUTTON.Click += tagme
 
 ART_SELECTOR.SelectedValueChanged += update_art
 
-LOAD_TEXTBOX.set_text(r'../test/Blackened.mp3')
+LOAD_TEXTBOX.set_text(r'../test/Roundabout.flac')
 
 Application.EnableVisualStyles()
 Application.Run(window)
+
+#the following codeblock sets a placeholder to each of the picture frames on the loaded file
+#clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
+    # from TagLib.Id3v2 import AttachedPictureFrame
+    # from TagLib import Picture, PictureType
+    # import TagLib.Png as png
+    #
+    # # x00 = Picture(r'../../0x00.png')
+    # # x01 = Picture(r'../../0x01.png')
+    # # x02 = Picture(r'../../0x02.png')
+    # # x03 = Picture(r'../../0x03.png')
+    # # x04 = Picture(r'../../0x04.png')
+    # # x05 = Picture(r'../../0x05.png')
+    # # x06 = Picture(r'../../0x06.png')
+    # # x07 = Picture(r'../../0x07.png')
+    # # x08 = Picture(r'../../0x08.png')
+    # # x09 = Picture(r'../../0x09.png')
+    # # x0A = Picture(r'../../0x0A.png')
+    # # x0B = Picture(r'../../0x0B.png')
+    # # x0C = Picture(r'../../0x0C.png')
+    # # x0D = Picture(r'../../0x0D.png')
+    # # x0E = Picture(r'../../0x0E.png')
+    # # x0F = Picture(r'../../0x0F.png')
+    # # x10 = Picture(r'../../0x10.png')
+    # # x11 = Picture(r'../../0x11.png')
+    # # x12 = Picture(r'../../0x12.png')
+    # # x13 = Picture(r'../../0x13.png')
+    # # x14 = Picture(r'../../0x14.png')
+    # # xff = Picture(r'../../0xff.png')
+    # # x00.Type = PictureType.Other
+    # # x01.Type = PictureType.FileIcon
+    # # x02.Type = PictureType.OtherFileIcon
+    # # x03.Type = PictureType.FrontCover
+    # # x04.Type = PictureType.BackCover
+    # # x05.Type = PictureType.LeafletPage
+    # # x06.Type = PictureType.Media
+    # # x07.Type = PictureType.LeadArtist
+    # # x08.Type = PictureType.Artist
+    # # x09.Type = PictureType.Conductor
+    # # x0A.Type = PictureType.Band
+    # # x0B.Type = PictureType.Composer
+    # # x0C.Type = PictureType.Lyricist
+    # # x0D.Type = PictureType.RecordingLocation
+    # # x0E.Type = PictureType.DuringRecording
+    # # x0F.Type = PictureType.DuringPerformance
+    # # x10.Type = PictureType.MovieScreenCapture
+    # # x11.Type = PictureType.ColoredFish
+    # # x12.Type = PictureType.Illustration
+    # # x13.Type = PictureType.BandLogo
+    # # x14.Type = PictureType.PublisherLogo
+    # # xff.Type = PictureType.NotAPicture
+    # #
+    # # clr.AddReference("System")
+    # # from System import Array
+    # #
+    # # pictures = Array[AttachedPictureFrame]([AttachedPictureFrame(x) for x in [x00,x01,x02,x03,x04,x05,x06,x07,x08,x09,x0A,x0B,x0C,x0D,x0E,x0F,x10,x11,x12,x13,x14,xff]])
+    # # FI.set_pictures(pictures)
+    # # FI.file.Save()
