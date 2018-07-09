@@ -247,7 +247,8 @@ def apply_changes(sender, args):
 
 
 def tagme(sender, args):
-    print "tagme"
+    from widget.art import Selector
+    a = Selector()
 
 #  ComboBox Events ######################
 
