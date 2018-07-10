@@ -16,7 +16,6 @@ from System.Drawing import Size, Color, Bitmap#, Icon
 clr.AddReference("System.IO")
 from System.IO import MemoryStream
 
-# clr.AddReference("System.Net")
 
 # endregion
 
@@ -120,7 +119,6 @@ ART_SELECTOR.Enabled = False
 # TODO Create new class for this widget
 ART = PictureBox()
 ART.SizeMode = PictureBoxSizeMode.StretchImage
-#  ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
 ART.BackColor = Color.White
 ART.Size = Size(160, 160)
 ART.Top = 50
@@ -194,7 +192,7 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 
 def load_file(sender, args):
     global FI
-    APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled, ART_SELECTOR.Enabled = [True] * 3
+    APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled = [True] * 2
     path = LOAD_TEXTBOX.get_text()
     if path:
         LOGGER.info("Loading file: {}".format(path))
@@ -247,8 +245,9 @@ def apply_changes(sender, args):
 
 
 def tagme(sender, args):
-    from widget.art import Selector
-    a = Selector()
+    clr.AddReference("System.Net")
+    from System.Net import WebClient
+    ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
 
 #  ComboBox Events ######################
 
