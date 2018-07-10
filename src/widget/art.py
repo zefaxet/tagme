@@ -14,7 +14,15 @@ class Selector(ComboBox):
         "Other" : PictureType.Other,
         "File Icon" : PictureType.FileIcon,
         "Other File Icon" : PictureType.OtherFileIcon,
-        "Front Cover" : 
+        "Front Cover" : PictureType.FrontCover,
+        "Back Cover" : PictureType.BackCover,
+        "Leaflet Page" : PictureType.LeafletPage,
+        "Media" : PictureType.Media,
+        "Lead Artist" : PictureType.LeadArtist,
+        "Artist" : PictureType.Artist,
+        "Conductor" : PictureType.Conductor,
+        "Band" : PictureType.Band,
+        # TODO complete this list
     }
 
     def __init__(self):
