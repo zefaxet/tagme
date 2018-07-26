@@ -57,6 +57,7 @@ class Selector(ComboBox):
 
 		imagetype = ID3_TAGS[self.SelectedItem.ToString()]
 
+
 class Art(PictureBox):
 
 	def __init__(self, parent):
