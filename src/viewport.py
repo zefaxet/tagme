@@ -105,13 +105,13 @@ EXPLORER_VISIBLE_INFORMATION_AREA.Controls.Add(INFO_AREA)
 #########################################
 
 #  ART AREA CONTROLS ####################
-ART_SELECTOR = Selector(ID3_TAGS.keys(), Size(100, 20), 26, (ART_AREA.Width - 100) / 2)
-
 # TODO finish art widget
 ART = Art(ART_AREA)
+
+ART_SELECTOR = Selector(ART_AREA, ART, ID3_TAGS.keys(), 100, 20, (ART_AREA.Width - 100) / 2, 26)
+
 # TODO Apply functionality to art widget class
 #  ART.Image = Bitmap(MemoryStream(WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
-
 ART_AREA.Controls.Add(ART_SELECTOR)
 #########################################
 
@@ -175,7 +175,7 @@ def load_file(sender, args):
 			FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
 			for picture in FI.get_pictures():
 				ART.set_picture(picture)
-			
+
 
 		try:
 			bitmap = Bitmap(MemoryStream(FI.get_pictures()[0].Data.Data))

@@ -7,65 +7,63 @@ clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import ComboBox, ComboBoxStyle, PictureBox, PictureBoxSizeMode
 
 clr.AddReference("System.Drawing")
-from System.Drawing import Color, Size
+from System.Drawing import Color, Size, Bitmap
+
+clr.AddReference("System.IO")
+from System.IO import MemoryStream
 
 clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
 from TagLib import PictureType
 
 ID3_TAGS = {
-	"Other" : PictureType.Other,
-	"File Icon" : PictureType.FileIcon,
-	"Other File Icon" : PictureType.OtherFileIcon,
-	"Front Cover" : PictureType.FrontCover,
-	"Back Cover" : PictureType.BackCover,
-	"Leaflet Page" : PictureType.LeafletPage,
-	"Media" : PictureType.Media,
-	"Lead Artist" : PictureType.LeadArtist,
-	"Artist" : PictureType.Artist,
-	"Conductor" : PictureType.Conductor,
-	"Band" : PictureType.Band,
-	"Composer" : PictureType.Composer,
-	"Lyricist" : PictureType.Lyricist,
-	"Recording Location" : PictureType.RecordingLocation,
-	"During Recording" : PictureType.DuringRecording,
-	"During Performance" : PictureType.DuringPerformance,
-	"Movie Screen Capture" : PictureType.MovieScreenCapture,
-	"Fishie" : PictureType.ColoredFish,
-	"Illustration" : PictureType.Illustration,
-	"Band Logo" : PictureType.BandLogo,
-	"Publisher Logo" : PictureType.PublisherLogo,
-	"Not a Picture" : PictureType.NotAPicture,
+	"Other": PictureType.Other,
+	"File Icon": PictureType.FileIcon,
+	"Other File Icon": PictureType.OtherFileIcon,
+	"Front Cover": PictureType.FrontCover,
+	"Back Cover": PictureType.BackCover,
+	"Leaflet Page": PictureType.LeafletPage,
+	"Media": PictureType.Media,
+	"Lead Artist": PictureType.LeadArtist,
+	"Artist": PictureType.Artist,
+	"Conductor": PictureType.Conductor,
+	"Band": PictureType.Band,
+	"Composer": PictureType.Composer,
+	"Lyricist": PictureType.Lyricist,
+	"Recording Location": PictureType.RecordingLocation,
+	"During Recording": PictureType.DuringRecording,
+	"During Performance": PictureType.DuringPerformance,
+	"Movie Screen Capture": PictureType.MovieScreenCapture,
+	"Fishie": PictureType.ColoredFish,
+	"Illustration": PictureType.Illustration,
+	"Band Logo": PictureType.BandLogo,
+	"Publisher Logo": PictureType.PublisherLogo,
+	"Not a Picture": PictureType.NotAPicture,
 }
 
 
-class Selector(ComboBox) :
+class Selector(ComboBox):
 	LOGGER = create_logger("Selector")
 
-	def __init__(self, options, size=None, top=None, left=None) :
+	def __init__(self, parent, art_panel, options, width, height, left_pad, top_pad):
 		ComboBox.__init__(self)
+		init_widget(self, parent, width, height, left_pad, top_pad)
 		self.DropDownStyle = ComboBoxStyle.DropDownList
 		self.Enabled = True
-		if size :
-			self.Size = size
-		if top :
-			self.Top = top
-		if left :
-			self.Left = left
-		for frame in options :
+		for frame in options:
 			self.Items.Add(frame)
+		self.art_panel = art_panel
 		# 5 is front cover
 		self.SelectedItem = self.Items[5]
 		self.SelectedValueChanged += self.__selected_value_changed
 
-	def __selected_value_changed(self, sender, args) :
+	def __selected_value_changed(self, sender, args):
+		image_type = ID3_TAGS[self.SelectedItem.ToString()]
+		self.art_panel.display_image(image_type)
 
-		imagetype = ID3_TAGS[self.SelectedItem.ToString()]
-		print imagetype.ToString()
 
+class Art(PictureBox):
 
-class Art(PictureBox) :
-
-	def __init__(self, parent) :
+	def __init__(self, parent):
 		left_pad = (parent.Width - 160) / 2
 		init_widget(self, parent, 160, 160, left_pad, 50)
 		self.SizeMode = PictureBoxSizeMode.StretchImage
@@ -78,7 +76,10 @@ class Art(PictureBox) :
 		value = picture.Data.Data
 		self.image_data[key] = value
 
-
+	def display_image(self, image_type):
+		image_to_display = self.image_data[image_type]
+		self.Image = Bitmap(MemoryStream(image_to_display))
+		
 # the following codeblock sets a placeholder to each of the picture frames on the loaded file
 # clr.AddReferenceToFileAndPath(r'../lib/taglib-sharp.dll')
 # from TagLib.Id3v2 import AttachedPictureFrame
