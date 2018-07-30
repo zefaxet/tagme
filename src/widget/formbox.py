@@ -8,13 +8,15 @@ from widget import init_widget
 
 clr.AddReference("System")
 from System import Array, UInt32
+
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import TextBox, HorizontalAlignment
+
 clr.AddReference("System.Drawing")
 from System.Drawing import Color
 
-class FormboxTypes:
 
+class FormboxTypes:
 	STRING_TYPE = str
 	STRING_ARRAY_TYPE = Array[str]
 	INTEGER_TYPE = UInt32
@@ -22,8 +24,8 @@ class FormboxTypes:
 	def __iter__(self):
 		return [FormboxTypes.STRING_TYPE, FormboxTypes.STRING_ARRAY_TYPE, FormboxTypes.INTEGER_TYPE]
 
-class Formbox(TextBox):
 
+class Formbox(TextBox):
 	# region Static members
 
 	LOGGER = create_logger('Formbox')
@@ -115,14 +117,14 @@ class Formbox(TextBox):
 			return text
 		elif self.form_type is UInt32:
 			self.LOGGER.info("Converting integer string {} in formbox '{}' to type UInt32.".format(text,
-																								 self.placeholder))
+																								   self.placeholder))
 			return UInt32(text)
 		elif self.form_type is Array[str]:
 			split_text = text.split(';')
 			return Array[str](split_text)
 
 	def set_text(self, text):
-		if not(text == "" or text is None):
+		if not (text == "" or text is None):
 			tag_type = type(text)
 
 			#  clear placeholder formatting
@@ -156,4 +158,4 @@ class Formbox(TextBox):
 		self.TextAlign = HorizontalAlignment.Left
 		self.ForeColor = Color.Black
 
-	# endregion
+# endregion

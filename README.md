@@ -11,6 +11,6 @@ IronPython 2.7
 
 * [Wikipedia](https://wikipedia.readthedocs.io/)
 
-### And the following dependencies
+### And the following clr projects
 
 * [TagLib Sharp](https://github.com/mono/taglib-sharp)

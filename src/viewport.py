@@ -3,7 +3,6 @@
 # region .NET Imports
 import clr
 
-# clr.AddReference("System")
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import Application, FormBorderStyle, Form, Panel, Button, DockStyle, PictureBox, \
 	PictureBoxSizeMode, \
@@ -138,7 +137,8 @@ FORMBOXES["Year"] = Formbox(UNDERLYING_INFORMATION_AREA, None, None, yearbox_lef
 							FormboxTypes.INTEGER_TYPE)
 
 tracknum_left_pad = UNDERLYING_INFORMATION_AREA.Width - 120
-FORMBOXES["Track #"] = Formbox(UNDERLYING_INFORMATION_AREA, None, None, tracknum_left_pad, 10, "Track #", FormboxTypes.INTEGER_TYPE)
+FORMBOXES["Track #"] = Formbox(UNDERLYING_INFORMATION_AREA, None, None, tracknum_left_pad, 10, "Track #",
+							   FormboxTypes.INTEGER_TYPE)
 
 APPLY_BUTTON = Button()
 APPLY_BUTTON.Text = "Apply"
@@ -156,76 +156,83 @@ UNDERLYING_INFORMATION_AREA.Controls.Add(FETCH_BUTTON)
 #  Button Methods #######################
 
 
-def load_file(sender, args) :
-	global FI
-	APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled = [True] * 2
+def load_file(sender, args):
 	path = LOAD_TEXTBOX.get_text()
-	if path :
-		LOGGER.info("Loading file: {}".format(path))
-		FI = FileInterface(path)
-		LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
+	global FI
+	try:
+		if path:
+			LOGGER.info("Loading file: {}".format(path))
+			FI = FileInterface(path)
+			LOGGER.info(r"'{}' loaded. Extracting tags.".format(path))
 
-		FORMBOXES["Title"].setup(FI.get_title, FI.set_title)
-		FORMBOXES["Album"].setup(FI.get_album, FI.set_album)
-		FORMBOXES["Album Artist"].setup(FI.get_main_artist, FI.set_main_artist)
-		FORMBOXES["Contributing Artists"].setup(FI.get_performers, FI.set_performers)
-		FORMBOXES["Genre"].setup(FI.get_genre, FI.set_genre)
-		FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
-		FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
+			APPLY_BUTTON.Enabled, FETCH_BUTTON.Enabled = [True] * 2
+			FORMBOXES["Title"].setup(FI.get_title, FI.set_title)
+			FORMBOXES["Album"].setup(FI.get_album, FI.set_album)
+			FORMBOXES["Album Artist"].setup(FI.get_main_artist, FI.set_main_artist)
+			FORMBOXES["Contributing Artists"].setup(FI.get_performers, FI.set_performers)
+			FORMBOXES["Genre"].setup(FI.get_genre, FI.set_genre)
+			FORMBOXES["Year"].setup(FI.get_year, FI.set_year)
+			FORMBOXES["Track #"].setup(FI.get_track_number, FI.set_track_number)
+			for picture in FI.get_pictures():
+				ART.set_picture(picture)
+			
 
-		try :
+		try:
 			bitmap = Bitmap(MemoryStream(FI.get_pictures()[0].Data.Data))
-		except IndexError :
+		except IndexError:
 			# TODO add placeholder bitmap for empty art
 			bitmap = None
 
 		ART.Image = bitmap
+	except IOError:
+		LOGGER.error("File could not be loaded.")
 
 
-def apply_changes(sender, args) :
+def apply_changes(sender, args):
 	changed_forms = []
-	for form in FORMBOXES.keys() :
+	for form in FORMBOXES.keys():
 		box = FORMBOXES[form]
-		if box.get_text() != box.original :
+		if box.get_text() != box.original:
 			LOGGER.info("Change found in formbox '{}': '{}' -> '{}'".format(box.placeholder,
 																			box.original, box.get_text()))
 			changed_forms.append(form)
 		changed_forms.reverse()
-	if len(changed_forms) :
+	if len(changed_forms):
 		response = MessageBox.Show(
 			"Are you sure that you want to apply the changes made? Changes have occurred to the following tags: {}"
 				.format(", ".join(changed_forms)), "Confirm changes", MessageBoxButtons.YesNo)
-		if response == DialogResult.Yes :
+		if response == DialogResult.Yes:
 			LOGGER.info("Applying changes...")
-			for form in changed_forms :
+			for form in changed_forms:
 				box = FORMBOXES[form]
 				LOGGER.info("Applying change in formbox '{}': '{}' -> '{}'".format(box.placeholder,
 																				   box.original, box.get_text()))
 				box.apply()
 			FI.file.Save()
-		elif response == DialogResult.No :
+		elif response == DialogResult.No:
 			print "nah"
-	else :
+	else:
 		MessageBox.Show(
 			"There are no changes to apply.", "Confirm changes"
 		)
 
 
-def tagme(sender, args) :
-	clr.AddReference("System.Net")
-	from System.Net import WebClient
-	ART.Image = Bitmap(MemoryStream(
-		WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
+def tagme(sender, args):
+	global FI
+	pictures = FI.get_pictures()
+	for x in pictures:
+		print x.Type
+	print "------------------"
+	temp = pictures[len(pictures)-1]
+	pictures[len(pictures)-1] = pictures[3]
+	pictures[3] = temp
+	FI.set_pictures(pictures)
+	FI.file.Save()
 
-
-#  ComboBox Events ######################
-
-
-def update_art(sender, args) :
-	# TODO add placeholder bitmap for empty art
-	# TODO update art based on status of selector
-	LOGGER.info("Selected file art changed to '{}'.".format(sender.SelectedItem))
-
+# clr.AddReference("System.Net")
+# from System.Net import WebClient
+# ART.Image = Bitmap(MemoryStream(
+# 	WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
 
 # bitmap = Bitmap(MemoryStream())
 # ART.Image
@@ -234,8 +241,6 @@ def update_art(sender, args) :
 LOAD_BUTTON.Click += load_file
 APPLY_BUTTON.Click += apply_changes
 FETCH_BUTTON.Click += tagme
-
-ART_SELECTOR.SelectedValueChanged += update_art
 
 LOAD_TEXTBOX.set_text(r'../test/Roundabout.flac')
 
