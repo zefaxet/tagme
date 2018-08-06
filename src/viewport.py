@@ -25,6 +25,7 @@ from util.log import create_logger
 from widget.formbox import Formbox, FormboxTypes
 from widget.art import *
 from FileInterface import FileInterface
+import web
 
 # endregion
 
@@ -218,25 +219,8 @@ def apply_changes(sender, args):
 
 
 def tagme(sender, args):
-	global FI
-	pictures = FI.get_pictures()
-	for x in pictures:
-		print x.Type
-	print "------------------"
-	temp = pictures[len(pictures)-1]
-	pictures[len(pictures)-1] = pictures[3]
-	pictures[3] = temp
-	FI.set_pictures(pictures)
-	FI.file.Save()
-
-# clr.AddReference("System.Net")
-# from System.Net import WebClient
-# ART.Image = Bitmap(MemoryStream(
-# 	WebClient().DownloadData('https://upload.wikimedia.org/wikipedia/en/2/2c/Metallica_-_Metallica_cover.jpg')))
-
-# bitmap = Bitmap(MemoryStream())
-# ART.Image
-
+	global FORMBOXES
+	web.do_fetch(None, title="ay")
 
 LOAD_BUTTON.Click += load_file
 APPLY_BUTTON.Click += apply_changes
